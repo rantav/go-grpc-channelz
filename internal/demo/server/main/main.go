@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"golang.org/x/sync/errgroup"
+	channelzservice "google.golang.org/grpc/channelz/service"
 	log "google.golang.org/grpc/grpclog"
 
 	channelz "github.com/rantav/go-grpc-channelz"
@@ -18,11 +19,13 @@ func main() {
 		adminBindAddress = ":8081"
 	)
 
+	// nolint:gosec
 	grpcListener, err := net.Listen("tcp", grpcBindAddress)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// nolint:gosec
 	adminListener, err := net.Listen("tcp", adminBindAddress)
 	if err != nil {
 		log.Fatal(err)
@@ -36,11 +39,15 @@ func main() {
 	// Register the channelz handler
 	channelz.Handle(http.DefaultServeMux, "/")
 
+	// Register the channelz gRPC service to grpcServer so that we can query it for this service.
+	channelzservice.RegisterChannelzServiceToServer(grpcServer)
+
 	g := new(errgroup.Group)
 	g.Go(func() error { return http.Serve(adminListener, nil) })
 	g.Go(func() error { return grpcServer.Serve(grpcListener) })
 
-	fmt.Printf("demo server is up is up; gRPC bind address: %s, http admin address: %s \n", grpcBindAddress, adminBindAddress)
+	fmt.Printf("demo server is up is up; gRPC bind address: %s, http admin address: %s \n",
+		grpcBindAddress, adminBindAddress)
 
 	// should never return
 	err = g.Wait()
