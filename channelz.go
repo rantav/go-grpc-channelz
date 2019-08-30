@@ -9,65 +9,115 @@ package channelz
 // "google.golang.org/grpc/channelz/service".RegisterChannelzServiceToServer(grpcServer)
 
 import (
+	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"path"
+	"strings"
+	"sync"
 
+	"github.com/pkg/errors"
+	"google.golang.org/grpc"
+	channelzgrpc "google.golang.org/grpc/channelz/grpc_channelz_v1"
 	log "google.golang.org/grpc/grpclog"
 )
 
 // Handle adds the /channelz to the given ServeMux rooted at pathPrefix.
-// if mus is nill then http.DefaultServeMux is used.
-func Handle(mux *http.ServeMux, pathPrefix string) {
+// if mux is nill then http.DefaultServeMux is used.
+// pathPrefix is the prefix to which /channelz will be prepended
+// bindAddress is the TCP bind address for the gRPC service you'd like to monitor.
+// 	bindAddress is required since the channelz interface connects to this gRPC service
+func Handle(mux *http.ServeMux, pathPrefix string, bindAddress string) {
 	if mux == nil {
 		mux = http.DefaultServeMux
 	}
-	mux.HandleFunc(path.Join(pathPrefix, "channelz"), channelzHandler)
+	mux.Handle(path.Join(pathPrefix, "channelz"), &channelzHandler{
+		bindAddress: bindAddress,
+	})
 	// mux.HandleFunc(path.Join(pathPrefix, "tracez"), tracezHandler)
 	// mux.Handle(path.Join(pathPrefix, "public/"), http.FileServer(fs))
 }
 
-func channelzHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	WriteHTMLChannelzPage(w)
+type channelzHandler struct {
+	// the target server's bind address
+	bindAddress string
+
+	// The client connection (lazily initialized)
+	client channelzgrpc.ChannelzClient
+
+	mu sync.Mutex
 }
 
-// WriteHTMLChannelzPage writes an HTML document to w containing per-channel RPC stats, including a header and a footer.
-func WriteHTMLChannelzPage(w io.Writer) {
+func (h *channelzHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	h.writeHTMLChannelzPage(w)
+}
+
+// writeHTMLChannelzPage writes an HTML document to w containing per-channel RPC stats, including a header and a footer.
+func (h *channelzHandler) writeHTMLChannelzPage(w io.Writer) {
 	if err := headerTemplate.Execute(w, headerData{Title: "ChannelZ Stats"}); err != nil {
 		log.Errorf("channelz: executing template: %v", err)
 	}
-	WriteHTMLChannelzSummary(w)
+	h.writeHTMLChannelzSummary(w)
 	if err := footerTemplate.Execute(w, nil); err != nil {
 		log.Errorf("channelz: executing template: %v", err)
 	}
 }
 
-// WriteHTMLChannelzSummary writes HTML to w containing per-channel RPC stats.
+// writeHTMLChannelzSummary writes HTML to w containing per-channel RPC stats.
 //
 // It includes neither a header nor footer, so you can embed this data in other pages.
-func WriteHTMLChannelzSummary(w io.Writer) {
-	if err := channelzsTemplate.Execute(w, getChannelzsList()); err != nil {
+func (h *channelzHandler) writeHTMLChannelzSummary(w io.Writer) {
+	if err := channelzsTemplate.Execute(w, h.getChannelzsList()); err != nil {
 		log.Errorf("channelz: executing template: %v", err)
 	}
 }
 
-func getChannelzsList() string {
-	return "TODO"
+func (h *channelzHandler) getChannelzsList() *channelzgrpc.GetTopChannelsResponse {
+	client, err := h.connect()
+	if err != nil {
+		log.Errorf("Error creating channelz client %+v", err)
+		return nil
+	}
+	ctx := context.Background()
+	channels, err := client.GetTopChannels(ctx, &channelzgrpc.GetTopChannelsRequest{})
+	if err != nil {
+		log.Errorf("Error querying GetTopChannels %+v", err)
+		return nil
+	}
+	return channels
 }
 
-// func NewChannelzClient(dialString string) (channelzgrpc.ChannelzClient, error) {
-// 	conn, err := grpc.Dial(dialString, grpc.WithInsecure())
-// 	if err != nil {
-// 		return nil, errors.Wrapf(err, "error dialing to %s", dialString)
-// 	}
-// 	client := channelzgrpc.NewChannelzClient(conn)
-// 	return client, nil
-// }
+func (h *channelzHandler) connect() (channelzgrpc.ChannelzClient, error) {
+	if h.client != nil {
+		// Already connected
+		return h.client, nil
+	}
+
+	host := getHostFromBindAddress(h.bindAddress)
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	client, err := newChannelzClient(host)
+	if err != nil {
+		return nil, err
+	}
+	h.client = client
+	return h.client, nil
+}
+
+func newChannelzClient(dialString string) (channelzgrpc.ChannelzClient, error) {
+	conn, err := grpc.Dial(dialString, grpc.WithInsecure())
+	if err != nil {
+		return nil, errors.Wrapf(err, "error dialing to %s", dialString)
+	}
+	client := channelzgrpc.NewChannelzClient(conn)
+	return client, nil
+}
 
 // func MonitorChannelz(bindAddress string) {
 // 	host := getHostFromBindAddress(bindAddress)
-// 	channelzclient, err := NewChannelzClient(host)
+// 	channelzclient, err := newChannelzClient(host)
 // 	if err != nil {
 // 		log.GetDefault().Errorf("Error creating channelz client %+v", err)
 // 	}
@@ -109,9 +159,9 @@ func getChannelzsList() string {
 // 	}
 // }
 
-// func getHostFromBindAddress(bindAddress string) string {
-// 	if strings.HasPrefix(bindAddress, ":") {
-// 		return fmt.Sprintf("localhost%s", bindAddress)
-// 	}
-// 	return bindAddress
-// }
+func getHostFromBindAddress(bindAddress string) string {
+	if strings.HasPrefix(bindAddress, ":") {
+		return fmt.Sprintf("localhost%s", bindAddress)
+	}
+	return bindAddress
+}

@@ -14,7 +14,7 @@ import (
 .
 
 // Register the channelz handler
-channelz.Handle(http.DefaultServeMux, "/")
+channelz.Handle(http.DefaultServeMux, "/", grpcBindAddress)
 
 // Register the channelz gRPC service to grpcServer so that we can query it for this service.
 channelzservice.RegisterChannelzServiceToServer(grpcServer)

@@ -19,9 +19,29 @@ type headerData struct {
 	Title string
 }
 
+type channels struct {
+	Channels []channel
+}
+
+type channel struct {
+}
+
 var (
 	channelzsTemplateHTML = `
-<h1>HELLO WORLD</h1>
+<table bgcolor="#fff5ee" frame=box cellspacing=0 cellpadding=2>
+    <tr bgcolor="#eee5de">
+		<th class="l1" colspan=3>Top Channels: {{.Channel | len}}</th>
+    </tr>
+    <tr bgcolor="#eee5de">
+        <th class="l1" colspan=3>Hello</th>
+    </tr>
+{{range .Channel}}
+    <tr>
+        <td><b>{{.Ref}}</b></td>
+        <td></td>
+    </tr>
+{{end}}
+</table>
 `
 
 	footerTemplateHTML = `
@@ -38,7 +58,7 @@ var (
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
     <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 </head>
-<body>
+<body style="padding: 2em">
 <h1>{{.Title}}</h1>
 `
 )
