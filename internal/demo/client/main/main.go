@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	log "google.golang.org/grpc/grpclog"
@@ -21,6 +22,6 @@ func main() {
 		log.Errorf("Error saying hello. %+v", err)
 		return
 	}
-
+	time.Sleep(10 * time.Second)
 	fmt.Println("Hello was successful")
 }
