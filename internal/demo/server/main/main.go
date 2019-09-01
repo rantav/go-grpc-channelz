@@ -37,7 +37,7 @@ func main() {
 	}
 
 	// Register the channelz handler
-	channelz.Handle(http.DefaultServeMux, "/", grpcBindAddress)
+	channelz.Handle(http.DefaultServeMux, "/foo", grpcBindAddress)
 
 	// Register the channelz gRPC service to grpcServer so that we can query it for this service.
 	channelzservice.RegisterChannelzServiceToServer(grpcServer)
