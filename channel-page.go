@@ -10,77 +10,71 @@ import (
 )
 
 // writeTopChannelsPage writes an HTML document to w containing per-channel RPC stats, including a header and a footer.
-func (h *channelzHandler) writeSubchannelPage(w io.Writer, channel, subchannel int64) {
-	writeHeader(w, fmt.Sprintf("ChannelZ %d/%d", channel, subchannel))
-	h.writeSubchannel(w, channel, subchannel)
+func (h *channelzHandler) writeChannelPage(w io.Writer, channel int64) {
+	writeHeader(w, fmt.Sprintf("ChannelZ channel %d", channel))
+	h.writeChannel(w, channel)
 	writeFooter(w)
 }
 
-// writeSubchannel writes HTML to w containing sub-channel RPC stats.
-//
-// It includes neither a header nor footer, so you can embed this data in other pages.
-func (h *channelzHandler) writeSubchannel(w io.Writer, channel, subchannel int64) {
-	if err := subChannelTemplate.Execute(w, h.getSubchannel(subchannel)); err != nil {
+func (h *channelzHandler) writeChannel(w io.Writer, channel int64) {
+	if err := channelTemplate.Execute(w, h.getChannel(channel)); err != nil {
 		log.Errorf("channelz: executing template: %v", err)
 	}
 }
 
-func (h *channelzHandler) getSubchannel(subchannelID int64) *channelzgrpc.GetSubchannelResponse {
+func (h *channelzHandler) getChannel(channelID int64) *channelzgrpc.GetChannelResponse {
 	client, err := h.connect()
 	if err != nil {
 		log.Errorf("Error creating channelz client %+v", err)
 		return nil
 	}
 	ctx := context.Background()
-	subchannel, err := client.GetSubchannel(ctx, &channelzgrpc.GetSubchannelRequest{
-		SubchannelId: subchannelID,
-	})
+	channel, err := client.GetChannel(ctx, &channelzgrpc.GetChannelRequest{ChannelId: channelID})
 	if err != nil {
-		log.Errorf("Error querying GetSubchannel %+v", err)
+		log.Errorf("Error querying GetChannel %+v", err)
 		return nil
 	}
-	return subchannel
+	return channel
 }
 
-const subChannelsTemplateHTML = `
+const channelTemplateHTML = `
 <table frame=box cellspacing=0 cellpadding=2>
     <tr classs="header">
         <th>ID</th>
         <th>Name</th>
         <th>State</th>
         <th>Target</th>
+        <th>Subchannels</th>
         <th>CreationTimestamp</th>
         <th>CallsStarted</th>
         <th>CallsSucceeded</th>
         <th>CallsFailed</th>
         <th>LastCallStartedTimestamp</th>
         <th>ChannelRef</th>
-        <th>SocketRef</th>
-
     </tr>
-{{with .Subchannel}}
+{{with .Channel}}
     <tr>
-		{{ $channelID := .Ref.SubchannelId }}
-        <td>{{.Ref.SubchannelId}}</td>
+        <td>{{.Ref.ChannelId}}</td>
         <td><b>{{.Ref.Name}}</b></td>
         <td>{{.Data.State}}</td>
         <td>{{.Data.Target}}</td>
+		<td>
+			{{range .SubchannelRef}}
+				<a href="../subchannel/{{.SubchannelId}}">[{{.SubchannelId}}]{{.Name}}</a><br/>
+			{{end}}
+		</td>
         <td>{{.Data.Trace.CreationTimestamp | timestamp}}</td>
         <td>{{.Data.CallsStarted}}</td>
         <td>{{.Data.CallsSucceeded}}</td>
         <td>{{.Data.CallsFailed}}</td>
         <td>{{.Data.LastCallStartedTimestamp | timestamp}}</td>
 		<td>{{.ChannelRef}}</td>
-		<td>
-			{{range .SocketRef}}
-				<strong>{{.SocketId}}</strong> {{.Name}}<br/>
-			{{end}}
-		</td>
 	</tr>
-	<tr>
+    <tr classs="header">
         <th colspan=100>Events</th>
-	</tr>
+    </tr>
 	<tr>
+		<td>&nbsp;</td>
         <td colspan=100>
 			<pre>
 			{{- range .Data.Trace.Events}}

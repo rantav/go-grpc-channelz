@@ -43,7 +43,7 @@ setup-git-hooks:
 	git config core.hooksPath .githooks
 
 lint: $(GOLANGCI_LINT)
-	$(GOPATH)/bin/golangci-lint run --fast --enable-all -D gochecknoglobals
+	$(GOPATH)/bin/golangci-lint run --fast --enable-all -D gochecknoglobals -D dupl
 
 $(GOLANGCI_LINT):
 	GO111MODULE=on go get github.com/golangci/golangci-lint/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION)
@@ -71,9 +71,6 @@ $(PROTOC_BIN):
 
 run-demo-server:
 	go run internal/demo/server/main/main.go
-
-run-demo-client:
-	go run internal/demo/client/main/main.go
 
 protoc: $(PROTOC_BIN)
 	mkdir -p internal/generated/service

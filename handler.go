@@ -12,7 +12,8 @@ import (
 	log "google.golang.org/grpc/grpclog"
 )
 
-var subchannelRx = regexp.MustCompile(`channelz/(?P<channel>\d+)/(?P<subchannel>\d+)$`)
+var channelRx = regexp.MustCompile(`channelz/channel/(?P<channel>\d+)$`)
+var subchannelRx = regexp.MustCompile(`channelz/subchannel/(?P<subchannel>\d+)$`)
 
 // Handle adds the /channelz to the given ServeMux rooted at pathPrefix.
 // if mux is nill then http.DefaultServeMux is used.
@@ -26,8 +27,6 @@ func Handle(mux *http.ServeMux, pathPrefix string, bindAddress string) {
 	mux.Handle(path.Join(pathPrefix, "channelz")+"/", &channelzHandler{
 		bindAddress: bindAddress,
 	})
-	// mux.HandleFunc(path.Join(pathPrefix, "tracez"), tracezHandler)
-	// mux.Handle(path.Join(pathPrefix, "public/"), http.FileServer(fs))
 }
 
 type channelzHandler struct {
@@ -47,16 +46,20 @@ func (h *channelzHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.writeTopChannelsPage(w)
 		return
 	}
-	if match := subchannelRx.FindStringSubmatch(path); match != nil {
-		topChannel, err := strconv.ParseInt(match[1], 10, 0)
+	if match := channelRx.FindStringSubmatch(path); match != nil {
+		channel, err := strconv.ParseInt(match[1], 10, 0)
 		if err != nil {
 			log.Errorf("channelz: Unable to parse int for channel ID. %s", match[1])
 		}
-		subChannel, err := strconv.ParseInt(match[2], 10, 0)
+		h.writeChannelPage(w, channel)
+		return
+	}
+	if match := subchannelRx.FindStringSubmatch(path); match != nil {
+		subChannel, err := strconv.ParseInt(match[1], 10, 0)
 		if err != nil {
-			log.Errorf("channelz: Unable to parse int for sub-channel ID. %s", match[2])
+			log.Errorf("channelz: Unable to parse int for sub-channel ID. %s", match[1])
 		}
-		h.writeSubchannelPage(w, topChannel, subChannel)
+		h.writeSubchannelPage(w, subChannel)
 		return
 	}
 	write404(w)

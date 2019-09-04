@@ -9,8 +9,10 @@ import (
 
 var (
 	headerTemplate      = parseTemplate("header", headerTemplateHTML)
-	topChannelsTemplate = parseTemplate("channelzs", topChannelsTemplateHTML)
-	subChannelTemplate  = parseTemplate("channelzs", subChannelsTemplateHTML)
+	topChannelsTemplate = parseTemplate("channels", topChannelsTemplateHTML)
+	subChannelTemplate  = parseTemplate("subchannel", subChannelsTemplateHTML)
+	channelTemplate     = parseTemplate("channel", channelTemplateHTML)
+	serversTemplate     = parseTemplate("servers", serversTemplateHTML)
 	footerTemplate      = parseTemplate("footer", footerTemplateHTML)
 )
 
