@@ -2,42 +2,47 @@ package channelz
 
 import (
 	"context"
+	"fmt"
 	"io"
 
+	"github.com/davecgh/go-spew/spew"
 	channelzgrpc "google.golang.org/grpc/channelz/grpc_channelz_v1"
 	log "google.golang.org/grpc/grpclog"
 )
 
-// writeServers writes HTML to w containing RPC servers stats.
+func (h *channelzHandler) writeServerPage(w io.Writer, server int64) {
+	writeHeader(w, fmt.Sprintf("ChannelZ server %d", server))
+	h.writeServer(w, server)
+	writeFooter(w)
+}
+
+// writeServer writes HTML to w containing RPC single server stats.
 //
 // It includes neither a header nor footer, so you can embed this data in other pages.
-func (h *channelzHandler) writeServers(w io.Writer) {
-	if err := serversTemplate.Execute(w, h.getServers()); err != nil {
+func (h *channelzHandler) writeServer(w io.Writer, server int64) {
+	if err := serverTemplate.Execute(w, h.getServer(server)); err != nil {
 		log.Errorf("channelz: executing template: %v", err)
 	}
 }
 
-func (h *channelzHandler) getServers() *channelzgrpc.GetServersResponse {
+func (h *channelzHandler) getServer(serverID int64) *channelzgrpc.GetServerResponse {
 	client, err := h.connect()
 	if err != nil {
 		log.Errorf("Error creating channelz client %+v", err)
 		return nil
 	}
 	ctx := context.Background()
-	servers, err := client.GetServers(ctx, &channelzgrpc.GetServersRequest{})
+	server, err := client.GetServer(ctx, &channelzgrpc.GetServerRequest{ServerId: serverID})
 	if err != nil {
 		log.Errorf("Error querying GetServers %+v", err)
 		return nil
 	}
-	return servers
+	spew.Dump(server)
+	return server
 }
 
-const serversTemplateHTML = `
+const serverTemplateHTML = `
 <table frame=box cellspacing=0 cellpadding=2>
-    <tr class="header">
-		<th colspan=100 style="text-align:left">Servers: {{.Server | len}}</th>
-    </tr>
-
     <tr classs="header">
         <th>Server</th>
 		<th>CreationTimestamp</th>
@@ -47,9 +52,9 @@ const serversTemplateHTML = `
         <th>LastCallStartedTimestamp</th>
 		<th>Sockets</th>
     </tr>
-{{range .Server}}
+{{with .Server}}
     <tr>
-        <td><a href="server/{{.Ref.ServerId}}"<b>{{.Ref.ServerId}}</b> {{.Ref.Name}}</a></td>
+        <td><b>{{.Ref.ServerId}}</b> {{.Ref.Name}}</td>
         <td>{{with .Data.Trace}} {{.CreationTimestamp | timestamp}} {{end}}</td>
         <td>{{.Data.CallsStarted}}</td>
         <td>{{.Data.CallsSucceeded}}</td>

@@ -74,13 +74,13 @@ const topChannelsTemplateHTML = `
 {{range .Channel}}
     <tr>
         <td>
-			<a href="channel/{{.Ref.ChannelId}}">[{{.Ref.ChannelId}}] {{.Ref.Name}}</a>
+			<a href="channel/{{.Ref.ChannelId}}"><b>{{.Ref.ChannelId}}</b> {{.Ref.Name}}</a>
 		</td>
         <td>{{.Data.State}}</td>
         <td>{{.Data.Target}}</td>
 		<td>
 			{{range .SubchannelRef}}
-				<a href="subchannel/{{.SubchannelId}}">[{{.SubchannelId}}] {{.Name}}</a><br/>
+				<a href="subchannel/{{.SubchannelId}}"><b>{{.SubchannelId}}</b> {{.Name}}</a><br/>
 			{{end}}
 		</td>
         <td>{{.Data.Trace.CreationTimestamp | timestamp}}</td>
@@ -92,4 +92,6 @@ const topChannelsTemplateHTML = `
 	</tr>
 {{end}}
 </table>
+<br/>
+<br/>
 `

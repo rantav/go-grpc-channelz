@@ -40,8 +40,7 @@ func (h *channelzHandler) getChannel(channelID int64) *channelzgrpc.GetChannelRe
 const channelTemplateHTML = `
 <table frame=box cellspacing=0 cellpadding=2>
     <tr classs="header">
-        <th>ID</th>
-        <th>Name</th>
+        <th>Channel</th>
         <th>State</th>
         <th>Target</th>
         <th>Subchannels</th>
@@ -54,13 +53,12 @@ const channelTemplateHTML = `
     </tr>
 {{with .Channel}}
     <tr>
-        <td>{{.Ref.ChannelId}}</td>
-        <td><b>{{.Ref.Name}}</b></td>
+        <td><b>{{.Ref.ChannelId}}</b> {{.Ref.Name}}</td>
         <td>{{.Data.State}}</td>
         <td>{{.Data.Target}}</td>
 		<td>
 			{{range .SubchannelRef}}
-				<a href="../subchannel/{{.SubchannelId}}">[{{.SubchannelId}}]{{.Name}}</a><br/>
+				<a href="../subchannel/{{.SubchannelId}}"><b>{{.SubchannelId}}</b> {{.Name}}</a><br/>
 			{{end}}
 		</td>
         <td>{{.Data.Trace.CreationTimestamp | timestamp}}</td>

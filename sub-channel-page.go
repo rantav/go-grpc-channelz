@@ -45,8 +45,7 @@ func (h *channelzHandler) getSubchannel(subchannelID int64) *channelzgrpc.GetSub
 const subChannelsTemplateHTML = `
 <table frame=box cellspacing=0 cellpadding=2>
     <tr classs="header">
-        <th>ID</th>
-        <th>Name</th>
+        <th>Subchannel</th>
         <th>State</th>
         <th>Target</th>
         <th>CreationTimestamp</th>
@@ -60,9 +59,7 @@ const subChannelsTemplateHTML = `
     </tr>
 {{with .Subchannel}}
     <tr>
-		{{ $channelID := .Ref.SubchannelId }}
-        <td>{{.Ref.SubchannelId}}</td>
-        <td><b>{{.Ref.Name}}</b></td>
+        <td><b>{{.Ref.SubchannelId}}</b> {{.Ref.Name}}</td>
         <td>{{.Data.State}}</td>
         <td>{{.Data.Target}}</td>
         <td>{{.Data.Trace.CreationTimestamp | timestamp}}</td>
@@ -73,7 +70,7 @@ const subChannelsTemplateHTML = `
 		<td>{{.ChannelRef}}</td>
 		<td>
 			{{range .SocketRef}}
-				<strong>{{.SocketId}}</strong> {{.Name}}<br/>
+				<b>{{.SocketId}}</b> {{.Name}}<br/>
 			{{end}}
 		</td>
 	</tr>

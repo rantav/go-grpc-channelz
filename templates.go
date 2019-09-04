@@ -13,6 +13,7 @@ var (
 	subChannelTemplate  = parseTemplate("subchannel", subChannelsTemplateHTML)
 	channelTemplate     = parseTemplate("channel", channelTemplateHTML)
 	serversTemplate     = parseTemplate("servers", serversTemplateHTML)
+	serverTemplate      = parseTemplate("server", serverTemplateHTML)
 	footerTemplate      = parseTemplate("footer", footerTemplateHTML)
 )
 

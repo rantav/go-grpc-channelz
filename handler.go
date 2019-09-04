@@ -14,6 +14,7 @@ import (
 
 var channelRx = regexp.MustCompile(`channelz/channel/(?P<channel>\d+)$`)
 var subchannelRx = regexp.MustCompile(`channelz/subchannel/(?P<subchannel>\d+)$`)
+var serverRx = regexp.MustCompile(`channelz/server/(?P<server>\d+)$`)
 
 // Handle adds the /channelz to the given ServeMux rooted at pathPrefix.
 // if mux is nill then http.DefaultServeMux is used.
@@ -60,6 +61,14 @@ func (h *channelzHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			log.Errorf("channelz: Unable to parse int for sub-channel ID. %s", match[1])
 		}
 		h.writeSubchannelPage(w, subChannel)
+		return
+	}
+	if match := serverRx.FindStringSubmatch(path); match != nil {
+		server, err := strconv.ParseInt(match[1], 10, 0)
+		if err != nil {
+			log.Errorf("channelz: Unable to parse int for server ID. %s", match[1])
+		}
+		h.writeServerPage(w, server)
 		return
 	}
 	write404(w)
