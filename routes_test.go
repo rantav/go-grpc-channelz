@@ -42,6 +42,12 @@ func TestCreateRouter(t *testing.T) {
 		"/channelz/channel/4":    "channel 4",
 		"/channelz/subchannel/5": "subchannel 5",
 		"/channelz/server/3":     "server 3",
+
+		// Non matched or errornous paths
+		"/channelz/channel/x":    "",
+		"/channelz/subchannel/x": "",
+		"/channelz/server/x":     "",
+		"/channelx":              "404 page not found\n",
 	}
 	for route, expected := range expects {
 		res, err := http.Get(ts.URL + route)
