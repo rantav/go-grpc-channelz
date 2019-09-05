@@ -1,4 +1,4 @@
-BIN_DIR := $(GOPATH)/bin
+BIN_DIR := ./bin
 GOLANGCI_LINT_VERSION := v1.17.1
 GOLANGCI_LINT := $(BIN_DIR)/golangci-lint
 PROTOC_VERSION := 3.9.1
@@ -46,7 +46,7 @@ lint: $(GOLANGCI_LINT)
 	$(GOLANGCI_LINT) run --fast --enable-all -D gochecknoglobals -D dupl
 
 $(GOLANGCI_LINT):
-	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(BIN_DIR) $(GOLANGCI_LINT_VERSION)
+	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s $(GOLANGCI_LINT_VERSION)
 
 guard-%:
 	@ if [ "${${*}}" = "" ]; then \
