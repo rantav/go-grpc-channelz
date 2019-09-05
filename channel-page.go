@@ -76,7 +76,7 @@ const channelTemplateHTML = `
         <td colspan=100>
 			<pre>
 			{{- range .Data.Trace.Events}}
-{{.Severity}} [{{.Timestamp}}]: {{.Description}}
+{{.Severity}} [{{.Timestamp | timestamp}}]: {{.Description}}
 			{{- end -}}
 			</pre>
 		</td>
