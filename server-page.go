@@ -10,7 +10,7 @@ import (
 	log "google.golang.org/grpc/grpclog"
 )
 
-func (h *channelzHandler) writeServerPage(w io.Writer, server int64) {
+func (h *grpcChannelzHandler) WriteServerPage(w io.Writer, server int64) {
 	writeHeader(w, fmt.Sprintf("ChannelZ server %d", server))
 	h.writeServer(w, server)
 	writeFooter(w)
@@ -19,13 +19,13 @@ func (h *channelzHandler) writeServerPage(w io.Writer, server int64) {
 // writeServer writes HTML to w containing RPC single server stats.
 //
 // It includes neither a header nor footer, so you can embed this data in other pages.
-func (h *channelzHandler) writeServer(w io.Writer, server int64) {
+func (h *grpcChannelzHandler) writeServer(w io.Writer, server int64) {
 	if err := serverTemplate.Execute(w, h.getServer(server)); err != nil {
 		log.Errorf("channelz: executing template: %v", err)
 	}
 }
 
-func (h *channelzHandler) getServer(serverID int64) *channelzgrpc.GetServerResponse {
+func (h *grpcChannelzHandler) getServer(serverID int64) *channelzgrpc.GetServerResponse {
 	client, err := h.connect()
 	if err != nil {
 		log.Errorf("Error creating channelz client %+v", err)
@@ -75,7 +75,7 @@ const serverTemplateHTML = `
 			<td colspan=100>
 				<pre>
 				{{- range .Events}}
-{{.Severity}} [{{.Timestamp}}]: {{.Description}}
+{{.Severity}} [{{.Timestamp | timestamp}}]: {{.Description}}
 				{{- end -}}
 				</pre>
 			</td>

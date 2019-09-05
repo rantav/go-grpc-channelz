@@ -11,13 +11,13 @@ import (
 // writeServers writes HTML to w containing RPC servers stats.
 //
 // It includes neither a header nor footer, so you can embed this data in other pages.
-func (h *channelzHandler) writeServers(w io.Writer) {
+func (h *grpcChannelzHandler) writeServers(w io.Writer) {
 	if err := serversTemplate.Execute(w, h.getServers()); err != nil {
 		log.Errorf("channelz: executing template: %v", err)
 	}
 }
 
-func (h *channelzHandler) getServers() *channelzgrpc.GetServersResponse {
+func (h *grpcChannelzHandler) getServers() *channelzgrpc.GetServersResponse {
 	client, err := h.connect()
 	if err != nil {
 		log.Errorf("Error creating channelz client %+v", err)
@@ -61,21 +61,6 @@ const serversTemplateHTML = `
 			{{end}}
 		</td>
 	</tr>
-	{{with .Data.Trace}}
-		<tr classs="header">
-			<th colspan=100>Events</th>
-		</tr>
-		<tr>
-			<td>&nbsp;</td>
-			<td colspan=100>
-				<pre>
-				{{- range .Events}}
-{{.Severity}} [{{.Timestamp}}]: {{.Description}}
-				{{- end -}}
-				</pre>
-			</td>
-		</tr>
-	{{end}}
 {{end}}
 </table>
 `
