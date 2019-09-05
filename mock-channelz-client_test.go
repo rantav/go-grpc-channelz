@@ -59,7 +59,9 @@ func (m *mockChannelzClient) GetServer(
 	ctx context.Context,
 	in *channelzclient.GetServerRequest,
 	opts ...grpc.CallOption) (*channelzclient.GetServerResponse, error) {
-	return nil, nil
+	return &channelzclient.GetServerResponse{
+		Server: createMockServer(),
+	}, nil
 }
 
 func (m *mockChannelzClient) GetServerSockets(
