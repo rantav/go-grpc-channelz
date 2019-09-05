@@ -1,10 +1,12 @@
 package channelz
 
 import (
+	"io"
 	"text/template"
 	"time"
 
 	"github.com/golang/protobuf/ptypes/timestamp"
+	log "google.golang.org/grpc/grpclog"
 )
 
 var (
@@ -30,6 +32,19 @@ func getFuncs() template.FuncMap {
 func formatTimestamp(ts *timestamp.Timestamp) string {
 	t := time.Unix(ts.Seconds, int64(ts.Nanos)).UTC()
 	return t.Format(time.RFC3339)
+}
+
+func writeHeader(w io.Writer, title string) {
+	if err := headerTemplate.Execute(w, headerData{Title: title}); err != nil {
+		log.Errorf("channelz: executing template: %v", err)
+	}
+}
+
+func writeFooter(w io.Writer) {
+	if err := footerTemplate.Execute(w, nil); err != nil {
+		log.Errorf("channelz: executing template: %v", err)
+	}
+
 }
 
 // headerData contains data for the header template.

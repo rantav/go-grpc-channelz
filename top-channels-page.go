@@ -16,19 +16,6 @@ func (h *channelzHandler) writeTopChannelsPage(w io.Writer) {
 	writeFooter(w)
 }
 
-func writeHeader(w io.Writer, title string) {
-	if err := headerTemplate.Execute(w, headerData{Title: title}); err != nil {
-		log.Errorf("channelz: executing template: %v", err)
-	}
-}
-
-func writeFooter(w io.Writer) {
-	if err := footerTemplate.Execute(w, nil); err != nil {
-		log.Errorf("channelz: executing template: %v", err)
-	}
-
-}
-
 // writeTopChannels writes HTML to w containing per-channel RPC stats.
 //
 // It includes neither a header nor footer, so you can embed this data in other pages.
