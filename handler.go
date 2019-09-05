@@ -18,11 +18,11 @@ import (
 // 	http.Handle("/", channelz.CreateHandler("/foo", grpcBindAddress))
 func CreateHandler(pathPrefix, grpcBindAddress string) http.Handler {
 	prefix := path.Join(pathPrefix, "channelz") + "/"
-	handler := &channelzHandler{bindAddress: grpcBindAddress}
+	handler := &grpcChannelzHandler{bindAddress: grpcBindAddress}
 	return createRouter(prefix, handler)
 }
 
-type channelzHandler struct {
+type grpcChannelzHandler struct {
 	// the target server's bind address
 	bindAddress string
 

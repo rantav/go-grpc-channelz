@@ -9,7 +9,7 @@ import (
 	channelzgrpc "google.golang.org/grpc/channelz/grpc_channelz_v1"
 )
 
-func (h *channelzHandler) connect() (channelzgrpc.ChannelzClient, error) {
+func (h *grpcChannelzHandler) connect() (channelzgrpc.ChannelzClient, error) {
 	if h.client != nil {
 		// Already connected
 		return h.client, nil

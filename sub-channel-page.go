@@ -9,8 +9,8 @@ import (
 	log "google.golang.org/grpc/grpclog"
 )
 
-// writeTopChannelsPage writes an HTML document to w containing per-channel RPC stats, including a header and a footer.
-func (h *channelzHandler) writeSubchannelPage(w io.Writer, subchannel int64) {
+// WriteSubchannelsPage writes an HTML document to w containing per-channel RPC stats, including a header and a footer.
+func (h *grpcChannelzHandler) WriteSubchannelPage(w io.Writer, subchannel int64) {
 	writeHeader(w, fmt.Sprintf("ChannelZ subchannel %d", subchannel))
 	h.writeSubchannel(w, subchannel)
 	writeFooter(w)
@@ -19,13 +19,13 @@ func (h *channelzHandler) writeSubchannelPage(w io.Writer, subchannel int64) {
 // writeSubchannel writes HTML to w containing sub-channel RPC stats.
 //
 // It includes neither a header nor footer, so you can embed this data in other pages.
-func (h *channelzHandler) writeSubchannel(w io.Writer, subchannel int64) {
+func (h *grpcChannelzHandler) writeSubchannel(w io.Writer, subchannel int64) {
 	if err := subChannelTemplate.Execute(w, h.getSubchannel(subchannel)); err != nil {
 		log.Errorf("channelz: executing template: %v", err)
 	}
 }
 
-func (h *channelzHandler) getSubchannel(subchannelID int64) *channelzgrpc.GetSubchannelResponse {
+func (h *grpcChannelzHandler) getSubchannel(subchannelID int64) *channelzgrpc.GetSubchannelResponse {
 	client, err := h.connect()
 	if err != nil {
 		log.Errorf("Error creating channelz client %+v", err)

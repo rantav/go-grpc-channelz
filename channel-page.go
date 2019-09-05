@@ -9,20 +9,20 @@ import (
 	log "google.golang.org/grpc/grpclog"
 )
 
-// writeTopChannelsPage writes an HTML document to w containing per-channel RPC stats, including a header and a footer.
-func (h *channelzHandler) writeChannelPage(w io.Writer, channel int64) {
+// WriteChannelPage writes an HTML document to w containing per-channel RPC stats, including a header and a footer.
+func (h *grpcChannelzHandler) WriteChannelPage(w io.Writer, channel int64) {
 	writeHeader(w, fmt.Sprintf("ChannelZ channel %d", channel))
 	h.writeChannel(w, channel)
 	writeFooter(w)
 }
 
-func (h *channelzHandler) writeChannel(w io.Writer, channel int64) {
+func (h *grpcChannelzHandler) writeChannel(w io.Writer, channel int64) {
 	if err := channelTemplate.Execute(w, h.getChannel(channel)); err != nil {
 		log.Errorf("channelz: executing template: %v", err)
 	}
 }
 
-func (h *channelzHandler) getChannel(channelID int64) *channelzgrpc.GetChannelResponse {
+func (h *grpcChannelzHandler) getChannel(channelID int64) *channelzgrpc.GetChannelResponse {
 	client, err := h.connect()
 	if err != nil {
 		log.Errorf("Error creating channelz client %+v", err)
