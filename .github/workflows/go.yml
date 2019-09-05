@@ -16,6 +16,6 @@ jobs:
       run: |
         go get -v -t -d ./...
     - name: Build and test
-      run: make test
+      run: PATH=$GOPATH/bin:$PATH make test
     - name: Lint
       run: make lint
