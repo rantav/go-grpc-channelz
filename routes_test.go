@@ -16,15 +16,19 @@ type mockHandler struct {
 }
 
 func (m *mockHandler) WriteTopChannelsPage(w io.Writer) {
+	// nolint:errcheck
 	w.Write([]byte("top"))
 }
 func (m *mockHandler) WriteChannelPage(w io.Writer, c int64) {
+	// nolint:errcheck
 	w.Write([]byte(fmt.Sprintf("channel %d", c)))
 }
 func (m *mockHandler) WriteSubchannelPage(w io.Writer, c int64) {
+	// nolint:errcheck
 	w.Write([]byte(fmt.Sprintf("subchannel %d", c)))
 }
 func (m *mockHandler) WriteServerPage(w io.Writer, c int64) {
+	// nolint:errcheck
 	w.Write([]byte(fmt.Sprintf("server %d", c)))
 }
 
