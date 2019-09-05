@@ -14,14 +14,45 @@ func (m *mockChannelzClient) GetTopChannels(
 	ctx context.Context,
 	in *channelzclient.GetTopChannelsRequest,
 	opts ...grpc.CallOption) (*channelzclient.GetTopChannelsResponse, error) {
-	return nil, nil
+	return &channelzclient.GetTopChannelsResponse{
+		Channel: []*channelzclient.Channel{
+			createMockChannel(),
+		},
+	}, nil
 }
 
 func (m *mockChannelzClient) GetServers(
 	ctx context.Context,
 	in *channelzclient.GetServersRequest,
 	opts ...grpc.CallOption) (*channelzclient.GetServersResponse, error) {
-	return nil, nil
+	return &channelzclient.GetServersResponse{
+		Server: []*channelzclient.Server{
+			createMockServer(),
+		},
+	}, nil
+}
+
+func createMockServer() *channelzclient.Server {
+	return &channelzclient.Server{
+		Ref: &channelzclient.ServerRef{
+			ServerId: 1,
+			Name:     "one",
+		},
+		Data: &channelzclient.ServerData{
+			Trace:          createMockChannelTrace(),
+			CallsStarted:   1,
+			CallsSucceeded: 1,
+			CallsFailed:    0,
+			LastCallStartedTimestamp: &timestamp.Timestamp{
+				Seconds: 6,
+				Nanos:   7,
+			},
+		},
+		ListenSocket: []*channelzclient.SocketRef{{
+			SocketId: 6,
+			Name:     "six",
+		}},
+	}
 }
 
 func (m *mockChannelzClient) GetServer(
@@ -47,27 +78,30 @@ func (m *mockChannelzClient) GetChannel(
 	}, nil
 }
 
+func createMockChannelTrace() *channelzclient.ChannelTrace {
+	return &channelzclient.ChannelTrace{
+		NumEventsLogged: 5,
+		CreationTimestamp: &timestamp.Timestamp{
+			Seconds: 6,
+			Nanos:   7,
+		},
+		Events: []*channelzclient.ChannelTraceEvent{{
+			Description: "setup",
+			Severity:    channelzclient.ChannelTraceEvent_CT_INFO,
+			Timestamp: &timestamp.Timestamp{
+				Seconds: 6,
+				Nanos:   7,
+			},
+		}},
+	}
+}
 func createMockChannelData() *channelzclient.ChannelData {
 	return &channelzclient.ChannelData{
 		State: &channelzclient.ChannelConnectivityState{
 			State: channelzclient.ChannelConnectivityState_CONNECTING,
 		},
-		Target: "the world",
-		Trace: &channelzclient.ChannelTrace{
-			NumEventsLogged: 5,
-			CreationTimestamp: &timestamp.Timestamp{
-				Seconds: 6,
-				Nanos:   7,
-			},
-			Events: []*channelzclient.ChannelTraceEvent{{
-				Description: "setup",
-				Severity:    channelzclient.ChannelTraceEvent_CT_INFO,
-				Timestamp: &timestamp.Timestamp{
-					Seconds: 6,
-					Nanos:   7,
-				},
-			}},
-		},
+		Target:         "the world",
+		Trace:          createMockChannelTrace(),
 		CallsStarted:   1,
 		CallsSucceeded: 2,
 		CallsFailed:    0,
@@ -125,25 +159,3 @@ func (m *mockChannelzClient) GetSocket(
 	opts ...grpc.CallOption) (*channelzclient.GetSocketResponse, error) {
 	return nil, nil
 }
-
-//func setupGrpcServer(require *require.Assertions) channelzHandler {
-//	// nolint:gosec
-//	listener, err := net.Listen("tcp", "127.0.0.1:0")
-//	require.NoError(err)
-//	address := listener.Addr().String()
-
-//	grpcServer, err := server.New()
-//	require.NoError(err)
-
-//	//router := CreateHandler("/_", address)
-
-//	channelzservice.RegisterChannelzServiceToServer(grpcServer)
-
-//	go func() {
-//		err := grpcServer.Serve(listener)
-//		require.NoError(err)
-//	}()
-
-//	handler := &grpcChannelzHandler{bindAddress: address}
-//	return handler
-//}

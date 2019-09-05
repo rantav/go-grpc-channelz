@@ -75,7 +75,7 @@ const serverTemplateHTML = `
 			<td colspan=100>
 				<pre>
 				{{- range .Events}}
-{{.Severity}} [{{.Timestamp}}]: {{.Description}}
+{{.Severity}} [{{.Timestamp | timestamp}}]: {{.Description}}
 				{{- end -}}
 				</pre>
 			</td>

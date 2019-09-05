@@ -61,21 +61,6 @@ const serversTemplateHTML = `
 			{{end}}
 		</td>
 	</tr>
-	{{with .Data.Trace}}
-		<tr classs="header">
-			<th colspan=100>Events</th>
-		</tr>
-		<tr>
-			<td>&nbsp;</td>
-			<td colspan=100>
-				<pre>
-				{{- range .Events}}
-{{.Severity}} [{{.Timestamp}}]: {{.Description}}
-				{{- end -}}
-				</pre>
-			</td>
-		</tr>
-	{{end}}
 {{end}}
 </table>
 `
