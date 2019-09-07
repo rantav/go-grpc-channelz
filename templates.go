@@ -10,6 +10,7 @@ import (
 )
 
 var (
+	common              *template.Template
 	headerTemplate      = parseTemplate("header", headerTemplateHTML)
 	topChannelsTemplate = parseTemplate("channels", topChannelsTemplateHTML)
 	subChannelTemplate  = parseTemplate("subchannel", subChannelsTemplateHTML)
@@ -21,7 +22,12 @@ var (
 )
 
 func parseTemplate(name, html string) *template.Template {
-	return template.Must(template.New(name).Funcs(getFuncs()).Parse(html))
+	if common == nil {
+		common = template.Must(template.New(name).Funcs(getFuncs()).Parse(html))
+		return common
+	}
+	common = template.Must(common.New(name).Funcs(getFuncs()).Parse(html))
+	return common
 }
 
 func getFuncs() template.FuncMap {

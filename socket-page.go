@@ -40,14 +40,14 @@ func (h *grpcChannelzHandler) getSocket(socketID int64) *channelzgrpc.GetSocketR
 }
 
 const socketTemplateHTML = `
-<table frame=box cellspacing=0 cellpadding=2>
+{{define "socket-headers"}}
     <tr classs="header">
-        <th>Socket</th>
+		<th>Socket</th>
 		<th>StreamsStarted</th>
-        <th>StreamsSucceeded</th>
-        <th>StreamsFailed</th>
-        <th>MessagesSent</th>
-        <th>MessagesReceived</th>
+		<th>StreamsSucceeded</th>
+		<th>StreamsFailed</th>
+		<th>MessagesSent</th>
+		<th>MessagesReceived</th>
 		<th>KeepAlivesSent</th>
 		<th>LastLocalStreamCreated</th>
 		<th>LastRemoteStreamCreated</th>
@@ -58,7 +58,9 @@ const socketTemplateHTML = `
 		<th>Options</th>
 		<th>Security</th>
     </tr>
-{{with .Socket}}
+{{end}}
+
+{{define "socket-body"}}
     <tr>
         <td>
 			<b>{{.Ref.SocketId}}</b> {{.Ref.Name}}<br/>
@@ -88,5 +90,9 @@ const socketTemplateHTML = `
 		<td>{{.Security}}</td>
 	</tr>
 {{end}}
+
+<table frame=box cellspacing=0 cellpadding=2>
+	{{template "socket-headers"}}
+	{{template "socket-body" .Socket}}
 </table>
 `

@@ -60,7 +60,7 @@ const serverTemplateHTML = `
         <td>{{.Data.LastCallStartedTimestamp | timestamp}}</td>
 		<td>
 			{{range .ListenSocket}}
-				<b>{{.SocketId}}</b> {{.Name}} <br/>
+				<a href="../socket/{{.SocketId}}"><b>{{.SocketId}}</b> {{.Name}}</a> <br/>
 			{{end}}
 		</td>
 	</tr>
