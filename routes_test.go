@@ -31,6 +31,10 @@ func (m *mockHandler) WriteServerPage(w io.Writer, c int64) {
 	// nolint:errcheck
 	w.Write([]byte(fmt.Sprintf("server %d", c)))
 }
+func (m *mockHandler) WriteSocketPage(w io.Writer, c int64) {
+	// nolint:errcheck
+	w.Write([]byte(fmt.Sprintf("socket %d", c)))
+}
 
 func TestCreateRouter(t *testing.T) {
 	assert := assert.New(t)
@@ -46,6 +50,7 @@ func TestCreateRouter(t *testing.T) {
 		"/channelz/channel/4":    "channel 4",
 		"/channelz/subchannel/5": "subchannel 5",
 		"/channelz/server/3":     "server 3",
+		"/channelz/socket/3":     "socket 3",
 
 		// Non matched or errornous paths
 		"/channelz/channel/x":    "",

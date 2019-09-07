@@ -38,29 +38,9 @@ const serversTemplateHTML = `
 		<th colspan=100 style="text-align:left">Servers: {{.Server | len}}</th>
     </tr>
 
-    <tr classs="header">
-        <th>Server</th>
-		<th>CreationTimestamp</th>
-        <th>CallsStarted</th>
-        <th>CallsSucceeded</th>
-        <th>CallsFailed</th>
-        <th>LastCallStartedTimestamp</th>
-		<th>Sockets</th>
-    </tr>
-{{range .Server}}
-    <tr>
-        <td><a href="server/{{.Ref.ServerId}}"<b>{{.Ref.ServerId}}</b> {{.Ref.Name}}</a></td>
-        <td>{{with .Data.Trace}} {{.CreationTimestamp | timestamp}} {{end}}</td>
-        <td>{{.Data.CallsStarted}}</td>
-        <td>{{.Data.CallsSucceeded}}</td>
-        <td>{{.Data.CallsFailed}}</td>
-        <td>{{.Data.LastCallStartedTimestamp | timestamp}}</td>
-		<td>
-			{{range .ListenSocket}}
-				<b>{{.SocketId}}</b> {{.Name}} <br/>
-			{{end}}
-		</td>
-	</tr>
-{{end}}
+	{{template "server-header"}}
+	{{range .Server}}
+		{{template "server-body" .}}
+	{{end}}
 </table>
 `

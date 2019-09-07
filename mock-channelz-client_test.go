@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/golang/protobuf/ptypes/timestamp"
+	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/grpc"
 	channelzclient "google.golang.org/grpc/channelz/grpc_channelz_v1"
 )
@@ -32,29 +33,6 @@ func (m *mockChannelzClient) GetServers(
 	}, nil
 }
 
-func createMockServer() *channelzclient.Server {
-	return &channelzclient.Server{
-		Ref: &channelzclient.ServerRef{
-			ServerId: 1,
-			Name:     "one",
-		},
-		Data: &channelzclient.ServerData{
-			Trace:          createMockChannelTrace(),
-			CallsStarted:   1,
-			CallsSucceeded: 1,
-			CallsFailed:    0,
-			LastCallStartedTimestamp: &timestamp.Timestamp{
-				Seconds: 6,
-				Nanos:   7,
-			},
-		},
-		ListenSocket: []*channelzclient.SocketRef{{
-			SocketId: 6,
-			Name:     "six",
-		}},
-	}
-}
-
 func (m *mockChannelzClient) GetServer(
 	ctx context.Context,
 	in *channelzclient.GetServerRequest,
@@ -78,6 +56,39 @@ func (m *mockChannelzClient) GetChannel(
 	return &channelzclient.GetChannelResponse{
 		Channel: createMockChannel(),
 	}, nil
+}
+
+func (m *mockChannelzClient) GetSubchannel(
+	ctx context.Context, in *channelzclient.GetSubchannelRequest,
+	opts ...grpc.CallOption) (*channelzclient.GetSubchannelResponse, error) {
+	return &channelzclient.GetSubchannelResponse{
+		Subchannel: createMockSubchannel(),
+	}, nil
+}
+
+func (m *mockChannelzClient) GetSocket(
+	ctx context.Context,
+	in *channelzclient.GetSocketRequest,
+	opts ...grpc.CallOption) (*channelzclient.GetSocketResponse, error) {
+	return &channelzclient.GetSocketResponse{
+		Socket: createMockSocket(),
+	}, nil
+}
+
+func createMockSubchannel() *channelzclient.Subchannel {
+	return &channelzclient.Subchannel{
+		Ref: &channelzclient.SubchannelRef{
+			SubchannelId: 4,
+			Name:         "four",
+		},
+		Data:          createMockChannelData(),
+		ChannelRef:    []*channelzclient.ChannelRef{},
+		SubchannelRef: []*channelzclient.SubchannelRef{},
+		SocketRef: []*channelzclient.SocketRef{{
+			SocketId: 9,
+			Name:     "nine",
+		}},
+	}
 }
 
 func createMockChannelTrace() *channelzclient.ChannelTrace {
@@ -131,33 +142,53 @@ func createMockChannel() *channelzclient.Channel {
 	}
 }
 
-func (m *mockChannelzClient) GetSubchannel(
-	ctx context.Context, in *channelzclient.GetSubchannelRequest,
-	opts ...grpc.CallOption) (*channelzclient.GetSubchannelResponse, error) {
-	return &channelzclient.GetSubchannelResponse{
-		Subchannel: createMockSubchannel(),
-	}, nil
-}
-
-func createMockSubchannel() *channelzclient.Subchannel {
-	return &channelzclient.Subchannel{
-		Ref: &channelzclient.SubchannelRef{
-			SubchannelId: 4,
-			Name:         "four",
+func createMockServer() *channelzclient.Server {
+	return &channelzclient.Server{
+		Ref: &channelzclient.ServerRef{
+			ServerId: 1,
+			Name:     "one",
 		},
-		Data:          createMockChannelData(),
-		ChannelRef:    []*channelzclient.ChannelRef{},
-		SubchannelRef: []*channelzclient.SubchannelRef{},
-		SocketRef: []*channelzclient.SocketRef{{
-			SocketId: 9,
-			Name:     "nine",
+		Data: &channelzclient.ServerData{
+			Trace:          createMockChannelTrace(),
+			CallsStarted:   1,
+			CallsSucceeded: 1,
+			CallsFailed:    0,
+			LastCallStartedTimestamp: &timestamp.Timestamp{
+				Seconds: 6,
+				Nanos:   7,
+			},
+		},
+		ListenSocket: []*channelzclient.SocketRef{{
+			SocketId: 6,
+			Name:     "six",
 		}},
 	}
 }
 
-func (m *mockChannelzClient) GetSocket(
-	ctx context.Context,
-	in *channelzclient.GetSocketRequest,
-	opts ...grpc.CallOption) (*channelzclient.GetSocketResponse, error) {
-	return nil, nil
+func createMockSocket() *channelzclient.Socket {
+	return &channelzclient.Socket{
+		Ref: &channelzclient.SocketRef{
+			SocketId: 1,
+			Name:     "one",
+		},
+		Data: &channelzclient.SocketData{
+			StreamsStarted:                   5,
+			StreamsSucceeded:                 6,
+			StreamsFailed:                    2,
+			MessagesSent:                     3,
+			MessagesReceived:                 7,
+			KeepAlivesSent:                   9,
+			LastLocalStreamCreatedTimestamp:  &timestamp.Timestamp{Seconds: 6, Nanos: 7},
+			LastRemoteStreamCreatedTimestamp: &timestamp.Timestamp{Seconds: 6, Nanos: 7},
+			LastMessageSentTimestamp:         &timestamp.Timestamp{Seconds: 6, Nanos: 7},
+			LastMessageReceivedTimestamp:     &timestamp.Timestamp{Seconds: 6, Nanos: 7},
+			LocalFlowControlWindow:           &wrappers.Int64Value{Value: 6},
+			RemoteFlowControlWindow:          &wrappers.Int64Value{Value: 99},
+			Option:                           []*channelzclient.SocketOption{{Name: "hello", Value: "world"}},
+		},
+		Local:      &channelzclient.Address{},
+		Remote:     &channelzclient.Address{},
+		Security:   &channelzclient.Security{},
+		RemoteName: "wowa",
+	}
 }

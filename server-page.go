@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/davecgh/go-spew/spew"
 	channelzgrpc "google.golang.org/grpc/channelz/grpc_channelz_v1"
 	log "google.golang.org/grpc/grpclog"
 )
@@ -34,15 +33,14 @@ func (h *grpcChannelzHandler) getServer(serverID int64) *channelzgrpc.GetServerR
 	ctx := context.Background()
 	server, err := client.GetServer(ctx, &channelzgrpc.GetServerRequest{ServerId: serverID})
 	if err != nil {
-		log.Errorf("Error querying GetServers %+v", err)
+		log.Errorf("Error querying GetServer %+v", err)
 		return nil
 	}
-	spew.Dump(server)
 	return server
 }
 
 const serverTemplateHTML = `
-<table frame=box cellspacing=0 cellpadding=2>
+{{define "server-header"}}
     <tr classs="header">
         <th>Server</th>
 		<th>CreationTimestamp</th>
@@ -52,9 +50,11 @@ const serverTemplateHTML = `
         <th>LastCallStartedTimestamp</th>
 		<th>Sockets</th>
     </tr>
-{{with .Server}}
+{{end}}
+
+{{define "server-body"}}
     <tr>
-        <td><b>{{.Ref.ServerId}}</b> {{.Ref.Name}}</td>
+        <td><a href="{{link "server" .Ref.ServerId}}"><b>{{.Ref.ServerId}}</b> {{.Ref.Name}}</a></td>
         <td>{{with .Data.Trace}} {{.CreationTimestamp | timestamp}} {{end}}</td>
         <td>{{.Data.CallsStarted}}</td>
         <td>{{.Data.CallsSucceeded}}</td>
@@ -62,7 +62,7 @@ const serverTemplateHTML = `
         <td>{{.Data.LastCallStartedTimestamp | timestamp}}</td>
 		<td>
 			{{range .ListenSocket}}
-				<b>{{.SocketId}}</b> {{.Name}} <br/>
+				<a href="{{link "socket" .SocketId}}"><b>{{.SocketId}}</b> {{.Name}}</a> <br/>
 			{{end}}
 		</td>
 	</tr>
@@ -82,5 +82,9 @@ const serverTemplateHTML = `
 		</tr>
 	{{end}}
 {{end}}
+
+<table frame=box cellspacing=0 cellpadding=2>
+	{{template "server-header"}}
+	{{template "server-body" .Server}}
 </table>
 `

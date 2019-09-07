@@ -54,7 +54,7 @@ const subChannelsTemplateHTML = `
         <th>CallsFailed</th>
         <th>LastCallStartedTimestamp</th>
         <th>ChannelRef</th>
-        <th>SocketRef</th>
+        <th>Socket</th>
 
     </tr>
 {{with .Subchannel}}
@@ -70,7 +70,7 @@ const subChannelsTemplateHTML = `
 		<td>{{.ChannelRef}}</td>
 		<td>
 			{{range .SocketRef}}
-				<b>{{.SocketId}}</b> {{.Name}}<br/>
+				<b><a href="{{link "socket" .SocketId}}">{{.SocketId}}</b> {{.Name}}</a><br/>
 			{{end}}
 		</td>
 	</tr>

@@ -12,5 +12,6 @@ func TestWriteChannelPage(t *testing.T) {
 	handler := grpcChannelzHandler{client: &mockChannelzClient{}}
 	var b strings.Builder
 	handler.WriteChannelPage(&b, 2)
+	assert.Contains(b.String(), "channel 2")
 	assert.Contains(b.String(), "CT_INFO [1970-01-01T00:00:06Z]: setup")
 }
