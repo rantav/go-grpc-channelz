@@ -46,38 +46,10 @@ const topChannelsTemplateHTML = `
 		<th colspan=100 style="text-align:left">Top Channels: {{.Channel | len}}</th>
     </tr>
 
-    <tr classs="header">
-        <th>Channel</th>
-        <th>State</th>
-        <th>Target</th>
-        <th>Subchannels</th>
-        <th>CreationTimestamp</th>
-        <th>CallsStarted</th>
-        <th>CallsSucceeded</th>
-        <th>CallsFailed</th>
-        <th>LastCallStartedTimestamp</th>
-        <th>ChannelRef</th>
-    </tr>
-{{range .Channel}}
-    <tr>
-        <td>
-			<a href="{{link "channel" .Ref.ChannelId}}"><b>{{.Ref.ChannelId}}</b> {{.Ref.Name}}</a>
-		</td>
-        <td>{{.Data.State}}</td>
-        <td>{{.Data.Target}}</td>
-		<td>
-			{{range .SubchannelRef}}
-				<a href="{{link "subchannel" .SubchannelId}}"><b>{{.SubchannelId}}</b> {{.Name}}</a><br/>
-			{{end}}
-		</td>
-        <td>{{.Data.Trace.CreationTimestamp | timestamp}}</td>
-        <td>{{.Data.CallsStarted}}</td>
-        <td>{{.Data.CallsSucceeded}}</td>
-        <td>{{.Data.CallsFailed}}</td>
-        <td>{{.Data.LastCallStartedTimestamp | timestamp}}</td>
-		<td>{{.ChannelRef}}</td>
-	</tr>
-{{end}}
+	{{template "channel-header"}}
+	{{range .Channel}}
+		{{template "channel-body" .}}
+	{{end}}
 </table>
 <br/>
 <br/>
