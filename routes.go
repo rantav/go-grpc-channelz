@@ -3,6 +3,7 @@ package channelz
 import (
 	"io"
 	"net/http"
+	"path"
 	"strconv"
 
 	"github.com/go-chi/chi"
@@ -17,7 +18,10 @@ type channelzHandler interface {
 	WriteSocketPage(io.Writer, int64)
 }
 
+var pathPrefix string
+
 func createRouter(prefix string, handler channelzHandler) *chi.Mux {
+	pathPrefix = prefix
 	router := chi.NewRouter()
 	router.Route(prefix, func(r chi.Router) {
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
@@ -61,4 +65,21 @@ func createRouter(prefix string, handler channelzHandler) *chi.Mux {
 		})
 	})
 	return router
+}
+
+func createHyperlink(parts ...interface{}) string {
+	asStrings := []string{"/" + pathPrefix}
+	for _, p := range parts {
+		switch t := p.(type) {
+		case string:
+			asStrings = append(asStrings, t)
+		case int:
+			s := strconv.Itoa(t)
+			asStrings = append(asStrings, s)
+		case int64:
+			s := strconv.FormatInt(t, 10)
+			asStrings = append(asStrings, s)
+		}
+	}
+	return path.Join(asStrings...)
 }

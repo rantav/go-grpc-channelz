@@ -12,6 +12,6 @@ func TestWriteTopChannelsPage(t *testing.T) {
 	handler := grpcChannelzHandler{client: &mockChannelzClient{}}
 	var b strings.Builder
 	handler.WriteTopChannelsPage(&b)
-	assert.Contains(b.String(), `<a href="subchannel/8"><b>8</b> eight</a>`)
-	assert.Contains(b.String(), `<a href="server/1"<b>1</b> one</a>`)
+	assert.Contains(b.String(), `<a href="/channelz/subchannel/8"><b>8</b> eight</a>`)
+	assert.Contains(b.String(), `<a href="/channelz/server/1"><b>1</b> one</a>`)
 }

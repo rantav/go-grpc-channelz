@@ -70,7 +70,7 @@ const subChannelsTemplateHTML = `
 		<td>{{.ChannelRef}}</td>
 		<td>
 			{{range .SocketRef}}
-				<b><a href="../socket/{{.SocketId}}">{{.SocketId}}</b> {{.Name}}</a><br/>
+				<b><a href="{{link "socket" .SocketId}}">{{.SocketId}}</b> {{.Name}}</a><br/>
 			{{end}}
 		</td>
 	</tr>

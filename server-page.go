@@ -40,7 +40,7 @@ func (h *grpcChannelzHandler) getServer(serverID int64) *channelzgrpc.GetServerR
 }
 
 const serverTemplateHTML = `
-<table frame=box cellspacing=0 cellpadding=2>
+{{define "server-header"}}
     <tr classs="header">
         <th>Server</th>
 		<th>CreationTimestamp</th>
@@ -50,9 +50,11 @@ const serverTemplateHTML = `
         <th>LastCallStartedTimestamp</th>
 		<th>Sockets</th>
     </tr>
-{{with .Server}}
+{{end}}
+
+{{define "server-body"}}
     <tr>
-        <td><b>{{.Ref.ServerId}}</b> {{.Ref.Name}}</td>
+        <td><a href="{{link "server" .Ref.ServerId}}"><b>{{.Ref.ServerId}}</b> {{.Ref.Name}}</a></td>
         <td>{{with .Data.Trace}} {{.CreationTimestamp | timestamp}} {{end}}</td>
         <td>{{.Data.CallsStarted}}</td>
         <td>{{.Data.CallsSucceeded}}</td>
@@ -60,7 +62,7 @@ const serverTemplateHTML = `
         <td>{{.Data.LastCallStartedTimestamp | timestamp}}</td>
 		<td>
 			{{range .ListenSocket}}
-				<a href="../socket/{{.SocketId}}"><b>{{.SocketId}}</b> {{.Name}}</a> <br/>
+				<a href="{{link "socket" .SocketId}}"><b>{{.SocketId}}</b> {{.Name}}</a> <br/>
 			{{end}}
 		</td>
 	</tr>
@@ -80,5 +82,9 @@ const serverTemplateHTML = `
 		</tr>
 	{{end}}
 {{end}}
+
+<table frame=box cellspacing=0 cellpadding=2>
+	{{template "server-header"}}
+	{{template "server-body" .Server}}
 </table>
 `

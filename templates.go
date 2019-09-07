@@ -33,6 +33,7 @@ func parseTemplate(name, html string) *template.Template {
 func getFuncs() template.FuncMap {
 	return template.FuncMap{
 		"timestamp": formatTimestamp,
+		"link":      createHyperlink,
 	}
 }
 

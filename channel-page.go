@@ -58,7 +58,7 @@ const channelTemplateHTML = `
         <td>{{.Data.Target}}</td>
 		<td>
 			{{range .SubchannelRef}}
-				<a href="../subchannel/{{.SubchannelId}}"><b>{{.SubchannelId}}</b> {{.Name}}</a><br/>
+				<a href="{{link "subchannel" .SubchannelId}}"><b>{{.SubchannelId}}</b> {{.Name}}</a><br/>
 			{{end}}
 		</td>
         <td>{{.Data.Trace.CreationTimestamp | timestamp}}</td>
