@@ -43,7 +43,7 @@ func (h *grpcChannelzHandler) getSubchannel(subchannelID int64) *channelzgrpc.Ge
 }
 
 const subChannelsTemplateHTML = `
-<table frame=box cellspacing=0 cellpadding=2>
+{{define "subchannel-header"}}
     <tr classs="header">
         <th>Subchannel</th>
         <th>State</th>
@@ -53,13 +53,15 @@ const subChannelsTemplateHTML = `
         <th>CallsSucceeded</th>
         <th>CallsFailed</th>
         <th>LastCallStartedTimestamp</th>
-        <th>ChannelRef</th>
+        <th>Child Channels</th>
+        <th>Child Subchannels</th>
         <th>Socket</th>
-
     </tr>
-{{with .Subchannel}}
+{{end}}
+
+{{define "subchannel-body"}}
     <tr>
-        <td><b>{{.Ref.SubchannelId}}</b> {{.Ref.Name}}</td>
+        <td><a href="{{link "subchannel" .Ref.SubchannelId}}"><b>{{.Ref.SubchannelId}}</b> {{.Ref.Name}}</a></td>
         <td>{{.Data.State}}</td>
         <td>{{.Data.Target}}</td>
         <td>{{.Data.Trace.CreationTimestamp | timestamp}}</td>
@@ -67,13 +69,25 @@ const subChannelsTemplateHTML = `
         <td>{{.Data.CallsSucceeded}}</td>
         <td>{{.Data.CallsFailed}}</td>
         <td>{{.Data.LastCallStartedTimestamp | timestamp}}</td>
-		<td>{{.ChannelRef}}</td>
+		<td>
+			{{range .ChannelRef}}
+				<b><a href="{{link "channel" .ChannelId}}">{{.ChannelId}}</b> {{.Name}}</a><br/>
+			{{end}}
+		</td>
+		<td>
+			{{range .SubchannelRef}}
+				<b><a href="{{link "subchannel" .SubchannelId}}">{{.SubchannelId}}</b> {{.Name}}</a><br/>
+			{{end}}
+		</td>
 		<td>
 			{{range .SocketRef}}
 				<b><a href="{{link "socket" .SocketId}}">{{.SocketId}}</b> {{.Name}}</a><br/>
 			{{end}}
 		</td>
 	</tr>
+{{end}}
+
+{{define "subchannel-events"}}
 	<tr>
         <th colspan=100>Events</th>
 	</tr>
@@ -87,5 +101,10 @@ const subChannelsTemplateHTML = `
 		</td>
     </tr>
 {{end}}
+
+<table frame=box cellspacing=0 cellpadding=2>
+	{{template "subchannel-header"}}
+	{{template "subchannel-body" .Subchannel}}
+	{{template "subchannel-events" .Subchannel}}
 </table>
 `
