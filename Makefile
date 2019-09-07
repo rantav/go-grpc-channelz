@@ -44,7 +44,7 @@ setup-git-hooks:
 
 lint: $(GOLANGCI_LINT)
 	# -D typecheck until golangci-lint gets it together to propery work with go1.13
-	$(GOLANGCI_LINT) run --fast --enable-all -D gochecknoglobals -D typecheck
+	$(GOLANGCI_LINT) run --fast --enable-all -D gochecknoglobals -D dupl -D typecheck
 
 $(GOLANGCI_LINT):
 	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s $(GOLANGCI_LINT_VERSION)
