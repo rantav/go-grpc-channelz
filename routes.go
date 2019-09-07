@@ -14,6 +14,7 @@ type channelzHandler interface {
 	WriteChannelPage(io.Writer, int64)
 	WriteSubchannelPage(io.Writer, int64)
 	WriteServerPage(io.Writer, int64)
+	WriteSocketPage(io.Writer, int64)
 }
 
 func createRouter(prefix string, handler channelzHandler) *chi.Mux {
@@ -48,6 +49,15 @@ func createRouter(prefix string, handler channelzHandler) *chi.Mux {
 				return
 			}
 			handler.WriteServerPage(w, server)
+		})
+		r.Get("/socket/{socket}", func(w http.ResponseWriter, r *http.Request) {
+			socketStr := chi.URLParam(r, "socket")
+			socket, err := strconv.ParseInt(socketStr, 10, 0)
+			if err != nil {
+				log.Errorf("channelz: Unable to parse int for socket ID. %s", socketStr)
+				return
+			}
+			handler.WriteSocketPage(w, socket)
 		})
 	})
 	return router

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/davecgh/go-spew/spew"
 	channelzgrpc "google.golang.org/grpc/channelz/grpc_channelz_v1"
 	log "google.golang.org/grpc/grpclog"
 )
@@ -34,10 +33,9 @@ func (h *grpcChannelzHandler) getServer(serverID int64) *channelzgrpc.GetServerR
 	ctx := context.Background()
 	server, err := client.GetServer(ctx, &channelzgrpc.GetServerRequest{ServerId: serverID})
 	if err != nil {
-		log.Errorf("Error querying GetServers %+v", err)
+		log.Errorf("Error querying GetServer %+v", err)
 		return nil
 	}
-	spew.Dump(server)
 	return server
 }
 
