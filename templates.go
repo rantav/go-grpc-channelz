@@ -79,6 +79,9 @@ var (
 		td {
 			vertical-align: top;
 		}
+		footer {
+			padding-top: 1em;
+		}
 	</style>
 </head>
 <body>
@@ -86,6 +89,9 @@ var (
 `
 
 	footerTemplateHTML = `
+<footer>
+	<a href="https://github.com/grpc/proposal/blob/master/A14-channelz.md" target="spec">Channelz Spec</a>
+</footer>
 </body>
 </html>
 `
