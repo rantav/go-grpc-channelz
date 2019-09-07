@@ -44,12 +44,13 @@ const channelTemplateHTML = `
         <th>State</th>
         <th>Target</th>
         <th>Subchannels</th>
+        <th>Child Channels</th>
+        <th>Sockets</th>
         <th>CreationTimestamp</th>
         <th>CallsStarted</th>
         <th>CallsSucceeded</th>
         <th>CallsFailed</th>
         <th>LastCallStartedTimestamp</th>
-        <th>ChannelRef</th>
     </tr>
 {{end}}
 
@@ -63,12 +64,21 @@ const channelTemplateHTML = `
 				<a href="{{link "subchannel" .SubchannelId}}"><b>{{.SubchannelId}}</b> {{.Name}}</a><br/>
 			{{end}}
 		</td>
+		<td>
+			{{range .ChannelRef}}
+				<a href="{{link "channel" .ChannelId}}"><b>{{.ChannelId}}</b> {{.Name}}</a><br/>
+			{{end}}
+		</td>
+		<td>
+			{{range .SocketRef}}
+				<a href="{{link "socket" .SocketId}}"><b>{{.SocketId}}</b> {{.Name}}</a><br/>
+			{{end}}
+		</td>
         <td>{{.Data.Trace.CreationTimestamp | timestamp}}</td>
         <td>{{.Data.CallsStarted}}</td>
         <td>{{.Data.CallsSucceeded}}</td>
         <td>{{.Data.CallsFailed}}</td>
         <td>{{.Data.LastCallStartedTimestamp | timestamp}}</td>
-		<td>{{.ChannelRef}}</td>
 	</tr>
 {{end}}
 
