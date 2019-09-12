@@ -74,7 +74,7 @@ A complete example:
 ```go
 import (
     "google.golang.org/grpc"
-	channelzservice "google.golang.org/grpc/channelz/service"
+    channelzservice "google.golang.org/grpc/channelz/service"
     channelz "github.com/rantav/go-grpc-channelz"
 )
 
