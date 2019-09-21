@@ -19,6 +19,10 @@ func (m *mockHandler) WriteTopChannelsPage(w io.Writer) {
 	// nolint:errcheck
 	w.Write([]byte("top"))
 }
+func (m *mockHandler) WriteChannelsPage(w io.Writer, c int64) {
+	// nolint:errcheck
+	w.Write([]byte(fmt.Sprintf("channels %d", c)))
+}
 func (m *mockHandler) WriteChannelPage(w io.Writer, c int64) {
 	// nolint:errcheck
 	w.Write([]byte(fmt.Sprintf("channel %d", c)))
@@ -46,11 +50,12 @@ func TestCreateRouter(t *testing.T) {
 	defer ts.Close()
 
 	expects := map[string]string{
-		"/channelz":              "top",
-		"/channelz/channel/4":    "channel 4",
-		"/channelz/subchannel/5": "subchannel 5",
-		"/channelz/server/3":     "server 3",
-		"/channelz/socket/3":     "socket 3",
+		"/channelz":                  "top",
+		"/channelz/channel/4":        "channel 4",
+		"/channelz/channels?start=4": "channels 4",
+		"/channelz/subchannel/5":     "subchannel 5",
+		"/channelz/server/3":         "server 3",
+		"/channelz/socket/3":         "socket 3",
 
 		// Non matched or errornous paths
 		"/channelz/channel/x":    "",

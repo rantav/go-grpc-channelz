@@ -12,6 +12,7 @@ import (
 
 type channelzHandler interface {
 	WriteTopChannelsPage(io.Writer)
+	WriteChannelsPage(io.Writer, int64)
 	WriteChannelPage(io.Writer, int64)
 	WriteSubchannelPage(io.Writer, int64)
 	WriteServerPage(io.Writer, int64)
@@ -35,6 +36,15 @@ func createRouter(prefix string, handler channelzHandler) *chi.Mux {
 				return
 			}
 			handler.WriteChannelPage(w, channel)
+		})
+		r.Get("/channels", func(w http.ResponseWriter, r *http.Request) {
+			startStr := r.URL.Query().Get("start")
+			start, err := strconv.ParseInt(startStr, 10, 0)
+			if err != nil {
+				log.Errorf("channelz: Unable to parse int for start channel ID. %s", startStr)
+				return
+			}
+			handler.WriteChannelsPage(w, start)
 		})
 		r.Get("/subchannel/{channel}", func(w http.ResponseWriter, r *http.Request) {
 			channelStr := chi.URLParam(r, "channel")

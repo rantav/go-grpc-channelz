@@ -10,15 +10,15 @@ import (
 )
 
 var (
-	common              *template.Template
-	headerTemplate      = parseTemplate("header", headerTemplateHTML)
-	topChannelsTemplate = parseTemplate("channels", topChannelsTemplateHTML)
-	subChannelTemplate  = parseTemplate("subchannel", subChannelsTemplateHTML)
-	channelTemplate     = parseTemplate("channel", channelTemplateHTML)
-	serversTemplate     = parseTemplate("servers", serversTemplateHTML)
-	serverTemplate      = parseTemplate("server", serverTemplateHTML)
-	socketTemplate      = parseTemplate("socket", socketTemplateHTML)
-	footerTemplate      = parseTemplate("footer", footerTemplateHTML)
+	common             *template.Template
+	headerTemplate     = parseTemplate("header", headerTemplateHTML)
+	channelsTemplate   = parseTemplate("channels", channelsTemplateHTML)
+	subChannelTemplate = parseTemplate("subchannel", subChannelsTemplateHTML)
+	channelTemplate    = parseTemplate("channel", channelTemplateHTML)
+	serversTemplate    = parseTemplate("servers", serversTemplateHTML)
+	serverTemplate     = parseTemplate("server", serverTemplateHTML)
+	socketTemplate     = parseTemplate("socket", socketTemplateHTML)
+	footerTemplate     = parseTemplate("footer", footerTemplateHTML)
 )
 
 func parseTemplate(name, html string) *template.Template {
