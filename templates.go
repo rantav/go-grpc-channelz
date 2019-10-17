@@ -52,7 +52,6 @@ func writeFooter(w io.Writer) {
 	if err := footerTemplate.Execute(w, nil); err != nil {
 		log.Errorf("channelz: executing template: %v", err)
 	}
-
 }
 
 // headerData contains data for the header template.

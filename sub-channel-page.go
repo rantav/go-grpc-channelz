@@ -46,7 +46,11 @@ const subChannelsTemplateHTML = `
 <table frame=box cellspacing=0 cellpadding=2 class="vertical">
     <tr>
 		<th>Subchannel</th>
-        <td><a href="{{link "subchannel" .Subchannel.Ref.SubchannelId}}"><b>{{.Subchannel.Ref.SubchannelId}}</b> {{.Subchannel.Ref.Name}}</a></td>
+        <td>
+			<a href="{{link "subchannel" .Subchannel.Ref.SubchannelId}}">
+				<b>{{.Subchannel.Ref.SubchannelId}}</b> {{.Subchannel.Ref.Name}}
+			</a>
+		</td>
 	</tr>
 	<tr>
         <th>State</th>

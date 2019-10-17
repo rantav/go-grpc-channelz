@@ -74,5 +74,4 @@ func TestCreateRouter(t *testing.T) {
 		assert.Equal([]byte(expected), response, "For path %s the expected result was %q, but instead we got %q",
 			route, expected, response)
 	}
-
 }

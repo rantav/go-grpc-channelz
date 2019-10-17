@@ -44,12 +44,12 @@ setup-git-hooks:
 
 lint: lint-install
 	# -D typecheck until golangci-lint gets it together to propery work with go1.13
-	$(GOLANGCI_LINT) run --fast --enable-all -D gochecknoglobals -D dupl -D typecheck
+	$(GOLANGCI_LINT) run --fast --enable-all -D gochecknoglobals -D dupl -D typecheck -D wsl
 
 lint-install:
 	# Check if golanglint-ci exists and is of the correct version, if not install
-	$(GOPATH)/bin/golangci-lint --version | grep $(GOLANGCI_LINT_VERSION) || \
-		curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GOPATH)/bin v$(GOLANGCI_LINT_VERSION)
+	$(GOLANGCI_LINT) --version | grep $(GOLANGCI_LINT_VERSION) || \
+		curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(BIN_DIR) v$(GOLANGCI_LINT_VERSION)
 
 guard-%:
 	@ if [ "${${*}}" = "" ]; then \
