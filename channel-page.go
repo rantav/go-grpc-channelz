@@ -38,69 +38,76 @@ func (h *grpcChannelzHandler) getChannel(channelID int64) *channelzgrpc.GetChann
 }
 
 const channelTemplateHTML = `
-{{define "channel-header"}}
-    <tr classs="header">
-        <th>Channel</th>
-        <th>State</th>
-        <th>Target</th>
-        <th>Subchannels</th>
-        <th>Child Channels</th>
-        <th>Sockets</th>
-        <th>CreationTimestamp</th>
-        <th>CallsStarted</th>
-        <th>CallsSucceeded</th>
-        <th>CallsFailed</th>
-        <th>LastCallStartedTimestamp</th>
-    </tr>
-{{end}}
-
-{{define "channel-body"}}
+<table frame=box cellspacing=0 cellpadding=2 class="vertical">
     <tr>
-        <td><a href="{{link "channel" .Ref.ChannelId}}"><b>{{.Ref.ChannelId}}</b> {{.Ref.Name}}</td>
-        <td>{{.Data.State}}</td>
-        <td>{{.Data.Target}}</td>
+		<th>ChannelId</th>
+        <td>{{.Channel.Ref.ChannelId}}
+	</tr>
+    <tr>
+		<th>Channel Name</th>
+        <td>{{.Channel.Ref.Name}}</td>
+	</tr>
+	<tr>
+        <th>State</th>
+        <td>{{.Channel.Data.State}}</td>
+	</tr>
+	<tr>
+        <th>Target</th>
+        <td>{{.Channel.Data.Target}}</td>
+	</tr>
+	<tr>
+        <th>Subchannels</th>
 		<td>
-			{{range .SubchannelRef}}
+			{{range .Channel.SubchannelRef}}
 				<a href="{{link "subchannel" .SubchannelId}}"><b>{{.SubchannelId}}</b> {{.Name}}</a><br/>
 			{{end}}
 		</td>
+	</tr>
+	<tr>
+        <th>Child Channels</th>
 		<td>
-			{{range .ChannelRef}}
+			{{range .Channel.ChannelRef}}
 				<a href="{{link "channel" .ChannelId}}"><b>{{.ChannelId}}</b> {{.Name}}</a><br/>
 			{{end}}
 		</td>
+	</tr>
+	<tr>
+        <th>Sockets</th>
 		<td>
-			{{range .SocketRef}}
+			{{range .Channel.SocketRef}}
 				<a href="{{link "socket" .SocketId}}"><b>{{.SocketId}}</b> {{.Name}}</a><br/>
 			{{end}}
 		</td>
-        <td>{{.Data.Trace.CreationTimestamp | timestamp}}</td>
-        <td>{{.Data.CallsStarted}}</td>
-        <td>{{.Data.CallsSucceeded}}</td>
-        <td>{{.Data.CallsFailed}}</td>
-        <td>{{.Data.LastCallStartedTimestamp | timestamp}}</td>
 	</tr>
-{{end}}
-
-{{define "channel-events"}}
-    <tr classs="header">
-        <th colspan=100>Events</th>
-    </tr>
 	<tr>
-		<td>&nbsp;</td>
-        <td colspan=100>
+        <th>CreationTimestamp</th>
+        <td>{{.Channel.Data.Trace.CreationTimestamp | timestamp}}</td>
+	</tr>
+	<tr>
+        <th>CallsStarted</th>
+        <td>{{.Channel.Data.CallsStarted}}</td>
+	</tr>
+	<tr>
+        <th>CallsSucceeded</th>
+        <td>{{.Channel.Data.CallsSucceeded}}</td>
+	</tr>
+	<tr>
+        <th>CallsFailed</th>
+        <td>{{.Channel.Data.CallsFailed}}</td>
+	</tr>
+	<tr>
+        <th>LastCallStartedTimestamp</th>
+        <td>{{.Channel.Data.LastCallStartedTimestamp | timestamp}}</td>
+    </tr>
+    <tr>
+        <th>Events</th>
+        <td>
 			<pre>
-			{{- range .Data.Trace.Events}}
+			{{- range .Channel.Data.Trace.Events}}
 {{.Severity}} [{{.Timestamp | timestamp}}]: {{.Description}}
 			{{- end -}}
 			</pre>
 		</td>
     </tr>
-{{end}}
-
-<table frame=box cellspacing=0 cellpadding=2>
-	{{template "channel-header"}}
-	{{template "channel-body" .Channel}}
-	{{template "channel-events" .Channel}}
 </table>
 `

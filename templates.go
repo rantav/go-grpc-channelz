@@ -73,6 +73,14 @@ var (
 		table {
 			background-color: #fff5ee;
 		}
+		table.section-header {
+			background-color: #eeeeff;
+			font-size: x-large;
+		}
+		table.vertical th {
+			text-align: right;
+			padding-right: 1em;
+		}
 		tr.header {
 			background-color: #eee5de;
 		}

@@ -40,39 +40,47 @@ func (h *grpcChannelzHandler) getServer(serverID int64) *channelzgrpc.GetServerR
 }
 
 const serverTemplateHTML = `
-{{define "server-header"}}
-    <tr classs="header">
-        <th>Server</th>
-		<th>CreationTimestamp</th>
-        <th>CallsStarted</th>
-        <th>CallsSucceeded</th>
-        <th>CallsFailed</th>
-        <th>LastCallStartedTimestamp</th>
-		<th>Sockets</th>
-    </tr>
-{{end}}
-
-{{define "server-body"}}
+<table frame=box cellspacing=0 cellpadding=2 class="vertical">
     <tr>
-        <td><a href="{{link "server" .Ref.ServerId}}"><b>{{.Ref.ServerId}}</b> {{.Ref.Name}}</a></td>
-        <td>{{with .Data.Trace}} {{.CreationTimestamp | timestamp}} {{end}}</td>
-        <td>{{.Data.CallsStarted}}</td>
-        <td>{{.Data.CallsSucceeded}}</td>
-        <td>{{.Data.CallsFailed}}</td>
-        <td>{{.Data.LastCallStartedTimestamp | timestamp}}</td>
+		<th>ServerId</th>
+        <td>{{.Server.Ref.ServerId}}</td>
+	</tr>
+    <tr>
+		<th>Server Name</th>
+        <td>{{.Server.Ref.Name}}</td>
+	</tr>
+	<tr>
+		<th>CreationTimestamp</th>
+        <td>{{with .Server.Data.Trace}} {{.CreationTimestamp | timestamp}} {{end}}</td>
+	</tr>
+	<tr>
+        <th>CallsStarted</th>
+        <td>{{.Server.Data.CallsStarted}}</td>
+	</tr>
+	<tr>
+        <th>CallsSucceeded</th>
+        <td>{{.Server.Data.CallsSucceeded}}</td>
+	</tr>
+	<tr>
+        <th>CallsFailed</th>
+        <td>{{.Server.Data.CallsFailed}}</td>
+	</tr>
+	<tr>
+        <th>LastCallStartedTimestamp</th>
+        <td>{{.Server.Data.LastCallStartedTimestamp | timestamp}}</td>
+	</tr>
+	<tr>
+		<th>Sockets</th>
 		<td>
-			{{range .ListenSocket}}
+			{{range .Server.ListenSocket}}
 				<a href="{{link "socket" .SocketId}}"><b>{{.SocketId}}</b> {{.Name}}</a> <br/>
 			{{end}}
 		</td>
-	</tr>
-	{{with .Data.Trace}}
-		<tr classs="header">
-			<th colspan=100>Events</th>
-		</tr>
+    </tr>
+	{{with .Server.Data.Trace}}
 		<tr>
-			<td>&nbsp;</td>
-			<td colspan=100>
+			<th>Events</th>
+			<td>
 				<pre>
 				{{- range .Events}}
 {{.Severity}} [{{.Timestamp | timestamp}}]: {{.Description}}
@@ -81,10 +89,5 @@ const serverTemplateHTML = `
 			</td>
 		</tr>
 	{{end}}
-{{end}}
-
-<table frame=box cellspacing=0 cellpadding=2>
-	{{template "server-header"}}
-	{{template "server-body" .Server}}
 </table>
 `

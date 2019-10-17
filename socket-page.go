@@ -40,59 +40,84 @@ func (h *grpcChannelzHandler) getSocket(socketID int64) *channelzgrpc.GetSocketR
 }
 
 const socketTemplateHTML = `
-{{define "socket-headers"}}
-    <tr classs="header">
-		<th>Socket</th>
-		<th>StreamsStarted</th>
-		<th>StreamsSucceeded</th>
-		<th>StreamsFailed</th>
-		<th>MessagesSent</th>
-		<th>MessagesReceived</th>
-		<th>KeepAlivesSent</th>
-		<th>LastLocalStreamCreated</th>
-		<th>LastRemoteStreamCreated</th>
-		<th>LastMessageSent</th>
-		<th>LastMessageReceived</th>
-		<th>LocalFlowControlWindow</th>
-		<th>RemoteFlowControlWindow</th>
-		<th>Options</th>
-		<th>Security</th>
-    </tr>
-{{end}}
-
-{{define "socket-body"}}
+<table frame=box cellspacing=0 cellpadding=2 class="vertical">
     <tr>
+		<th>SocketId</th>
         <td>
-			<b>{{.Ref.SocketId}}</b> {{.Ref.Name}}<br/>
-			<!--
-			<pre>{{.Local}} -> {{.Remote}} {{with .RemoteName}}({{.}}){{end}}</pre>
-			-->
+			{{.Socket.Ref.SocketId}}
 		</td>
-		{{with .Data}}
-			<td>{{.StreamsStarted}}</td>
-			<td>{{.StreamsSucceeded}}</td>
-			<td>{{.StreamsFailed}}</td>
-			<td>{{.MessagesSent}}</td>
-			<td>{{.MessagesReceived}}</td>
-			<td>{{.KeepAlivesSent}}</td>
-			<td>{{.LastLocalStreamCreatedTimestamp | timestamp}}</td>
-			<td>{{.LastRemoteStreamCreatedTimestamp | timestamp}}</td>
-			<td>{{.LastMessageSentTimestamp | timestamp}}</td>
-			<td>{{.LastMessageReceivedTimestamp | timestamp}}</td>
-			<td>{{.LocalFlowControlWindow.Value}}</td>
-			<td>{{.RemoteFlowControlWindow.Value}}</td>
-			<td>
-				{{range .Option}}
-					{{.Name}}: {{.Value}} {{with .Additional}}({{.}}){{end}}<br/>
-				{{end}}
-			</td>
-		{{end}}
-		<td>{{.Security}}</td>
 	</tr>
-{{end}}
-
-<table frame=box cellspacing=0 cellpadding=2>
-	{{template "socket-headers"}}
-	{{template "socket-body" .Socket}}
+	<tr>
+		<th>Socket Name</th>
+        <td>
+			{{.Socket.Ref.Name}}
+		</td>
+	</tr>
+	<tr>
+		<th>Socket Local -> Remote</th>
+        <td>
+			<pre>{{.Socket.Local}} -> {{.Socket.Remote}} {{with .Socket.RemoteName}}({{.}}){{end}}</pre>
+		</td>
+	</tr>
+	<tr>
+		<th>StreamsStarted</th>
+		<td>{{.Socket.Data.StreamsStarted}}</td>
+	</tr>
+	<tr>
+		<th>StreamsSucceeded</th>
+		<td>{{.Socket.Data.StreamsSucceeded}}</td>
+	</tr>
+	<tr>
+		<th>StreamsFailed</th>
+		<td>{{.Socket.Data.StreamsFailed}}</td>
+	</tr>
+	<tr>
+		<th>MessagesSent</th>
+		<td>{{.Socket.Data.MessagesSent}}</td>
+	</tr>
+	<tr>
+		<th>MessagesReceived</th>
+		<td>{{.Socket.Data.MessagesReceived}}</td>
+	</tr>
+	<tr>
+		<th>KeepAlivesSent</th>
+		<td>{{.Socket.Data.KeepAlivesSent}}</td>
+	</tr>
+	<tr>
+		<th>LastLocalStreamCreated</th>
+		<td>{{.Socket.Data.LastLocalStreamCreatedTimestamp | timestamp}}</td>
+	</tr>
+	<tr>
+		<th>LastRemoteStreamCreated</th>
+		<td>{{.Socket.Data.LastRemoteStreamCreatedTimestamp | timestamp}}</td>
+	</tr>
+	<tr>
+		<th>LastMessageSent</th>
+		<td>{{.Socket.Data.LastMessageSentTimestamp | timestamp}}</td>
+	</tr>
+	<tr>
+		<th>LastMessageReceived</th>
+		<td>{{.Socket.Data.LastMessageReceivedTimestamp | timestamp}}</td>
+	</tr>
+	<tr>
+		<th>LocalFlowControlWindow</th>
+		<td>{{.Socket.Data.LocalFlowControlWindow.Value}}</td>
+	</tr>
+	<tr>
+		<th>RemoteFlowControlWindow</th>
+		<td>{{.Socket.Data.RemoteFlowControlWindow.Value}}</td>
+	</tr>
+	<tr>
+		<th>Options</th>
+		<td>
+			{{range .Socket.Data.Option}}
+				{{.Name}}: {{.Value}} {{with .Additional}}({{.}}){{end}}<br/>
+			{{end}}
+		</td>
+	</tr>
+	<tr>
+		<th>Security</th>
+		<td>{{.Socket.Security}}</td>
+    </tr>
 </table>
 `
