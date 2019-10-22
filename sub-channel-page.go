@@ -43,68 +43,76 @@ func (h *grpcChannelzHandler) getSubchannel(subchannelID int64) *channelzgrpc.Ge
 }
 
 const subChannelsTemplateHTML = `
-{{define "subchannel-header"}}
-    <tr classs="header">
-        <th>Subchannel</th>
-        <th>State</th>
-        <th>Target</th>
-        <th>CreationTimestamp</th>
-        <th>CallsStarted</th>
-        <th>CallsSucceeded</th>
-        <th>CallsFailed</th>
-        <th>LastCallStartedTimestamp</th>
-        <th>Child Channels</th>
-        <th>Child Subchannels</th>
-        <th>Socket</th>
-    </tr>
-{{end}}
-
-{{define "subchannel-body"}}
+<table frame=box cellspacing=0 cellpadding=2 class="vertical">
     <tr>
-        <td><a href="{{link "subchannel" .Ref.SubchannelId}}"><b>{{.Ref.SubchannelId}}</b> {{.Ref.Name}}</a></td>
-        <td>{{.Data.State}}</td>
-        <td>{{.Data.Target}}</td>
-        <td>{{.Data.Trace.CreationTimestamp | timestamp}}</td>
-        <td>{{.Data.CallsStarted}}</td>
-        <td>{{.Data.CallsSucceeded}}</td>
-        <td>{{.Data.CallsFailed}}</td>
-        <td>{{.Data.LastCallStartedTimestamp | timestamp}}</td>
+		<th>Subchannel</th>
+        <td>
+			<a href="{{link "subchannel" .Subchannel.Ref.SubchannelId}}">
+				<b>{{.Subchannel.Ref.SubchannelId}}</b> {{.Subchannel.Ref.Name}}
+			</a>
+		</td>
+	</tr>
+	<tr>
+        <th>State</th>
+        <td>{{.Subchannel.Data.State}}</td>
+	</tr>
+	<tr>
+        <th>Target</th>
+        <td>{{.Subchannel.Data.Target}}</td>
+	</tr>
+	<tr>
+        <th>CreationTimestamp</th>
+        <td>{{.Subchannel.Data.Trace.CreationTimestamp | timestamp}}</td>
+	</tr>
+	<tr>
+        <th>CallsStarted</th>
+        <td>{{.Subchannel.Data.CallsStarted}}</td>
+	</tr>
+	<tr>
+        <th>CallsSucceeded</th>
+        <td>{{.Subchannel.Data.CallsSucceeded}}</td>
+	</tr>
+	<tr>
+        <th>CallsFailed</th>
+        <td>{{.Subchannel.Data.CallsFailed}}</td>
+	</tr>
+	<tr>
+        <th>LastCallStartedTimestamp</th>
+        <td>{{.Subchannel.Data.LastCallStartedTimestamp | timestamp}}</td>
+	</tr>
+	<tr>
+        <th>Child Channels</th>
 		<td>
-			{{range .ChannelRef}}
+			{{range .Subchannel.ChannelRef}}
 				<b><a href="{{link "channel" .ChannelId}}">{{.ChannelId}}</b> {{.Name}}</a><br/>
 			{{end}}
 		</td>
+	</tr>
+	<tr>
+        <th>Child Subchannels</th>
 		<td>
-			{{range .SubchannelRef}}
+			{{range .Subchannel.SubchannelRef}}
 				<b><a href="{{link "subchannel" .SubchannelId}}">{{.SubchannelId}}</b> {{.Name}}</a><br/>
 			{{end}}
 		</td>
+	</tr>
+	<tr>
+        <th>Socket</th>
 		<td>
-			{{range .SocketRef}}
+			{{range .Subchannel.SocketRef}}
 				<b><a href="{{link "socket" .SocketId}}">{{.SocketId}}</b> {{.Name}}</a><br/>
 			{{end}}
 		</td>
-	</tr>
-{{end}}
-
-{{define "subchannel-events"}}
+    </tr>
 	<tr>
-        <th colspan=100>Events</th>
-	</tr>
-	<tr>
+        <th>Events</th>
         <td colspan=100>
 			<pre>
-			{{- range .Data.Trace.Events}}
+			{{- range .Subchannel.Data.Trace.Events}}
 {{.Severity}} [{{.Timestamp | timestamp}}]: {{.Description}}
 			{{- end -}}
 			</pre>
 		</td>
     </tr>
-{{end}}
-
-<table frame=box cellspacing=0 cellpadding=2>
-	{{template "subchannel-header"}}
-	{{template "subchannel-body" .Subchannel}}
-	{{template "subchannel-events" .Subchannel}}
 </table>
 `

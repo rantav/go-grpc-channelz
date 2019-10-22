@@ -1,5 +1,5 @@
 BIN_DIR := ./bin
-GOLANGCI_LINT_VERSION := v1.17.1
+GOLANGCI_LINT_VERSION := 1.21.0
 GOLANGCI_LINT := $(BIN_DIR)/golangci-lint
 PROTOC_VERSION := 3.9.1
 RELEASE_OS :=
@@ -42,12 +42,14 @@ setup: setup-git-hooks
 setup-git-hooks:
 	git config core.hooksPath .githooks
 
-lint: $(GOLANGCI_LINT)
+lint: lint-install
 	# -D typecheck until golangci-lint gets it together to propery work with go1.13
-	$(GOLANGCI_LINT) run --fast --enable-all -D gochecknoglobals -D dupl -D typecheck
+	$(GOLANGCI_LINT) run --fast --enable-all -D gochecknoglobals -D dupl -D typecheck -D wsl
 
-$(GOLANGCI_LINT):
-	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s $(GOLANGCI_LINT_VERSION)
+lint-install:
+	# Check if golanglint-ci exists and is of the correct version, if not install
+	$(GOLANGCI_LINT) --version | grep $(GOLANGCI_LINT_VERSION) || \
+		curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(BIN_DIR) v$(GOLANGCI_LINT_VERSION)
 
 guard-%:
 	@ if [ "${${*}}" = "" ]; then \
