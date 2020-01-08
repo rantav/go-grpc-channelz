@@ -22,6 +22,9 @@ You install go-grpc-channelz into your service and expose it's web page and that
 
 ![Subchannel](doc/subchannel.png)
 
+![Socket](doc/socket.png)
+
+![Server](doc/server.png)
 
 ## Usage
 
