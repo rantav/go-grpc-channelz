@@ -5,8 +5,8 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/golang/protobuf/ptypes/timestamp"
 	log "google.golang.org/grpc/grpclog"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (
@@ -37,9 +37,8 @@ func getFuncs() template.FuncMap {
 	}
 }
 
-func formatTimestamp(ts *timestamp.Timestamp) string {
-	t := time.Unix(ts.Seconds, int64(ts.Nanos)).UTC()
-	return t.Format(time.RFC3339)
+func formatTimestamp(ts *timestamppb.Timestamp) string {
+	return ts.AsTime().Format(time.RFC3339)
 }
 
 func writeHeader(w io.Writer, title string) {

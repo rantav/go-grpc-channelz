@@ -3,10 +3,10 @@ package channelz
 import (
 	"context"
 
-	"github.com/golang/protobuf/ptypes/timestamp"
-	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/grpc"
 	channelzclient "google.golang.org/grpc/channelz/grpc_channelz_v1"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 type mockChannelzClient struct{}
@@ -94,14 +94,14 @@ func createMockSubchannel() *channelzclient.Subchannel {
 func createMockChannelTrace() *channelzclient.ChannelTrace {
 	return &channelzclient.ChannelTrace{
 		NumEventsLogged: 5,
-		CreationTimestamp: &timestamp.Timestamp{
+		CreationTimestamp: &timestamppb.Timestamp{
 			Seconds: 6,
 			Nanos:   7,
 		},
 		Events: []*channelzclient.ChannelTraceEvent{{
 			Description: "setup",
 			Severity:    channelzclient.ChannelTraceEvent_CT_INFO,
-			Timestamp: &timestamp.Timestamp{
+			Timestamp: &timestamppb.Timestamp{
 				Seconds: 6,
 				Nanos:   7,
 			},
@@ -118,7 +118,7 @@ func createMockChannelData() *channelzclient.ChannelData {
 		CallsStarted:   1,
 		CallsSucceeded: 2,
 		CallsFailed:    0,
-		LastCallStartedTimestamp: &timestamp.Timestamp{
+		LastCallStartedTimestamp: &timestamppb.Timestamp{
 			Seconds: 6,
 			Nanos:   7,
 		},
@@ -153,7 +153,7 @@ func createMockServer() *channelzclient.Server {
 			CallsStarted:   1,
 			CallsSucceeded: 1,
 			CallsFailed:    0,
-			LastCallStartedTimestamp: &timestamp.Timestamp{
+			LastCallStartedTimestamp: &timestamppb.Timestamp{
 				Seconds: 6,
 				Nanos:   7,
 			},
@@ -178,12 +178,12 @@ func createMockSocket() *channelzclient.Socket {
 			MessagesSent:                     3,
 			MessagesReceived:                 7,
 			KeepAlivesSent:                   9,
-			LastLocalStreamCreatedTimestamp:  &timestamp.Timestamp{Seconds: 6, Nanos: 7},
-			LastRemoteStreamCreatedTimestamp: &timestamp.Timestamp{Seconds: 6, Nanos: 7},
-			LastMessageSentTimestamp:         &timestamp.Timestamp{Seconds: 6, Nanos: 7},
-			LastMessageReceivedTimestamp:     &timestamp.Timestamp{Seconds: 6, Nanos: 7},
-			LocalFlowControlWindow:           &wrappers.Int64Value{Value: 6},
-			RemoteFlowControlWindow:          &wrappers.Int64Value{Value: 99},
+			LastLocalStreamCreatedTimestamp:  &timestamppb.Timestamp{Seconds: 6, Nanos: 7},
+			LastRemoteStreamCreatedTimestamp: &timestamppb.Timestamp{Seconds: 6, Nanos: 7},
+			LastMessageSentTimestamp:         &timestamppb.Timestamp{Seconds: 6, Nanos: 7},
+			LastMessageReceivedTimestamp:     &timestamppb.Timestamp{Seconds: 6, Nanos: 7},
+			LocalFlowControlWindow:           &wrapperspb.Int64Value{Value: 6},
+			RemoteFlowControlWindow:          &wrapperspb.Int64Value{Value: 99},
 			Option:                           []*channelzclient.SocketOption{{Name: "hello", Value: "world"}},
 		},
 		Local:      &channelzclient.Address{},

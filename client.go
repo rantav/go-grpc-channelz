@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	channelzgrpc "google.golang.org/grpc/channelz/grpc_channelz_v1"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func (h *grpcChannelzHandler) connect() (channelzgrpc.ChannelzClient, error) {
@@ -27,7 +28,9 @@ func (h *grpcChannelzHandler) connect() (channelzgrpc.ChannelzClient, error) {
 }
 
 func newChannelzClient(dialString string) (channelzgrpc.ChannelzClient, error) {
-	conn, err := grpc.Dial(dialString, grpc.WithInsecure())
+	conn, err := grpc.Dial(dialString,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
 	if err != nil {
 		return nil, errors.Wrapf(err, "error dialing to %s", dialString)
 	}
