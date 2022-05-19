@@ -3,13 +3,15 @@ package server
 import (
 	"context"
 
-	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	demoservice "github.com/rantav/go-grpc-channelz/internal/generated/service"
 )
 
-type server struct{}
+type server struct {
+	demoservice.UnimplementedDemoServiceServer
+}
 
 // New creates a new grpc server
 func New() (*grpc.Server, error) {
@@ -19,6 +21,6 @@ func New() (*grpc.Server, error) {
 	return grpcServer, nil
 }
 
-func (s *server) Hello(ctx context.Context, _ *empty.Empty) (*empty.Empty, error) {
-	return &empty.Empty{}, nil
+func (s *server) Hello(_ context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
+	return &emptypb.Empty{}, nil
 }

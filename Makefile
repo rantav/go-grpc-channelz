@@ -1,7 +1,7 @@
 BIN_DIR := ./bin
 GOLANGCI_LINT_VERSION := 1.21.0
 GOLANGCI_LINT := $(BIN_DIR)/golangci-lint
-PROTOC_VERSION := 3.9.1
+PROTOC_VERSION := 3.20.1
 RELEASE_OS :=
 PROTOC_DIR := .tmp/protoc-$(PROTOC_VERSION)
 PROTOC_BIN := $(PROTOC_DIR)/bin/protoc
@@ -70,12 +70,16 @@ $(PROTOC_BIN):
 		unzip protoc-$(PROTOC_VERSION)-$(RELEASE_OS)-x86_64.zip
 	chmod +x $(PROTOC_BIN)
 	@echo "Installing protoc-gen-go (if required)"
-	@which protoc-gen-go > /dev/null || GO111MODULE=on go get -u github.com/golang/protobuf/protoc-gen-go
+	@which protoc-gen-go > /dev/null || go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+	@echo "Installing protoc-gen-go-grpc (if required)"
+	@which protoc-gen-go-grpc > /dev/null || go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
 run-demo-server:
 	go run internal/demo/server/main/main.go
 
 protoc: $(PROTOC_BIN)
 	mkdir -p internal/generated/service
-	$(PROTOC_BIN) --proto_path=internal/proto/ --go_out=plugins=grpc:internal/generated/service internal/proto/*.proto
-
+	$(PROTOC_BIN) --proto_path=internal/proto \
+		--go_out=internal/generated/service --go_opt=paths=source_relative \
+		--go-grpc_out=internal/generated/service --go-grpc_opt=paths=source_relative \
+		internal/proto/*.proto

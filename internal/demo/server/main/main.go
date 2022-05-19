@@ -10,8 +10,8 @@ import (
 	"golang.org/x/sync/errgroup"
 	channelzservice "google.golang.org/grpc/channelz/service"
 	log "google.golang.org/grpc/grpclog"
+	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/golang/protobuf/ptypes/empty"
 	channelz "github.com/rantav/go-grpc-channelz"
 	"github.com/rantav/go-grpc-channelz/internal/demo/client"
 	"github.com/rantav/go-grpc-channelz/internal/demo/server"
@@ -68,7 +68,7 @@ func runClient(dialString string) {
 	}
 	for {
 		time.Sleep(10 * time.Second)
-		_, err = client.Hello(context.Background(), &empty.Empty{})
+		_, err = client.Hello(context.Background(), &emptypb.Empty{})
 		if err != nil {
 			log.Errorf("Error saying hello. %+v", err)
 			return

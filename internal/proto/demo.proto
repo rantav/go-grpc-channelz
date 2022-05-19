@@ -3,6 +3,8 @@ import "google/protobuf/empty.proto";
 
 package demo;
 
+option go_package = "github.com/rantav/go-grpc-channelz;demo";
+
 service DemoService {
   rpc Hello(google.protobuf.Empty) returns (google.protobuf.Empty);
 }
